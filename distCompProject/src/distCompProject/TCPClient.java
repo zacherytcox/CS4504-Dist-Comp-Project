@@ -12,7 +12,7 @@ public class TCPClient {
         BufferedReader in = null; // for reading form ServerRouter
         InetAddress addr = InetAddress.getLocalHost();
         String host = addr.getHostAddress(); // Client machine's IP
-        String routerName = "10.99.13.92"; // ServerRouter host name
+        String routerName = "ipaddress"; // ServerRouter host name
         int SockNum = 5555; // port number
         
         // Tries to connect to the ServerRouter
@@ -31,11 +31,11 @@ public class TCPClient {
         }
             
         // Variables for message passing	
-        Reader reader = new FileReader("file.txt"); //create a file so it can be read?
+        Reader reader = new FileReader("FilePath\\file.txt"); //create a file so it can be read?
         BufferedReader fromFile =  new BufferedReader(reader); // reader for the string file
         String fromServer; // messages received from ServerRouter
         String fromUser; // messages sent to ServerRouter
-        String address ="10.99.4.220"; // destination IP (Server)
+        String address ="ipaddress"; // destination IP (Server)
         long t0, t1, t;
         
         // Communication process (initial sends/receives
