@@ -9,10 +9,10 @@ import java.awt.event.*;
 
 public class TCPNode extends Frame {
 
-	private Label lblCount; // Declare a Label component
-	private TextField tfCount; // Declare a TextField component
-	private Button btnCount; // Declare a Button component
-	private int count = 0; // Counter's value
+	private TextField sendString; // Declare a Label component
+
+	private Button runServer; // Declare a Button component
+	private Button runClient; // Declare a Button component
 
 	public static void main(String[] args) {
 
@@ -37,24 +37,12 @@ public class TCPNode extends Frame {
 			out = new PrintWriter(Socket.getOutputStream(), true); // creates
 																	// stream of
 																	// data
-			in = new BufferedReader(new InputStreamReader(Socket.getInputStream())); // creates
-																						// a
-																						// buffer,
-																						// that
-																						// is
-																						// in
-																						// stream
-																						// of
-																						// data,
-																						// from
-																						// the
-																						// opened
-																						// port
+			in = new BufferedReader(new InputStreamReader(Socket.getInputStream())); 
 		} catch (UnknownHostException e) { // dont know the router
-			System.err.println("Don't know about router: " + routerName);
+			System.err.println("Client: Don't know about router: " + routerName);
 			System.exit(1);
 		} catch (IOException e) { // cant get data stream
-			System.err.println("Couldn't get I/O for the connection to: " + routerName);
+			System.err.println("Client: Couldn't get I/O for the connection to: " + routerName);
 			System.exit(1);
 		}
 
@@ -118,10 +106,10 @@ public class TCPNode extends Frame {
 			out = new PrintWriter(Socket.getOutputStream(), true);
 			in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
 		} catch (UnknownHostException e) {
-			System.err.println("Don't know about router: " + routerName);
+			System.err.println("Server: Don't know about router: " + routerName);
 			System.exit(1);
 		} catch (IOException e) {
-			System.err.println("Couldn't get I/O for the connection to: " + routerName);
+			System.err.println("Server: Couldn't get I/O for the connection to: " + routerName);
 			System.exit(1);
 		}
 
@@ -161,38 +149,53 @@ public class TCPNode extends Frame {
 	         // "super" Frame (a Container) sets its layout to FlowLayout, which arranges
 	         // the components from left-to-right, and flow to next row from top-to-bottom.
 	 
-	      lblCount = new Label("Counter");  // construct the Label component
-	      add(lblCount);                    // "super" Frame adds Label
+
+	      sendString = new TextField("string");  // construct the Label component	      
+	      add(sendString);                    // "super" Frame adds Label
+	      
+	      
+	      runClient = new Button("Run Client");  // construct the Label component
+	      add(runClient);                    // "super" Frame adds Label
+	      runClient.addActionListener(new goClient());
+	      
+	      
+	      
+	      runServer = new Button("Run Server");  // construct the Label component
+	      add(runServer); // "super" Frame adds Label
+	      runServer.addActionListener(new goServer());
+	      
+	      
+	      setTitle("TEST");  // "super" Frame sets its title
+	      setSize(200, 100);        // "super" Frame sets its initial window size
 	 
-	      tfCount = new TextField("0", 10); // construct the TextField component
-	      tfCount.setEditable(false);       // set to read-only
-	      add(tfCount);                     // "super" Frame adds TextField
-	 
-	      btnCount = new Button("Count");   // construct the Button component
-	      add(btnCount);                    // "super" Frame adds Button
-	 
-	      //btnCount.addActionListener(this);
-	         // btnCount is the source object that fires ActionEvent when clicked.
-	         // The source add "this" instance as an ActionEvent listener, which provides
-	         //  an ActionEvent handler called actionPerformed().X
-	         // Clicking btnCount invokes actionPerformed().
-	 
-	      setTitle("AWT Counter");  // "super" Frame sets its title
-	      setSize(250, 100);        // "super" Frame sets its initial window size
-	 
-	      // For inspecting the components/container objects
-	      // System.out.println(this);
-	      // System.out.println(lblCount);
-	      // System.out.println(tfCount);
-	      // System.out.println(btnCount);
 	 
 	      setVisible(true);         // "super" Frame shows
 	 
-	      // System.out.println(this);
-	      // System.out.println(lblCount);
-	      // System.out.println(tfCount);
-	      // System.out.println(btnCount);
 
+	}
+
+	private class goServer implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			try {
+				serverStuffs();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+	}
+	
+	private class goClient implements ActionListener {
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			try {
+				clientStuffs();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
 	}
 
 }
