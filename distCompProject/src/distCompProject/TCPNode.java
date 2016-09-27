@@ -4,23 +4,36 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.awt.*;
 import java.awt.event.*;
+import java.applet.Applet;
 
-public class TCPNode extends Frame {
+public class TCPNode extends Applet {
 
+	final String HOMEPATH = "FilePath\\";
+	private String routerName, address;
+	private Label strRouterServerIP; // Declare a Label component	
+	private Label strDestIP; // Declare a Label component	
+	private Label strSendString; // Declare a Label component	
 	private TextField sendString; // Declare a Label component
-
+	private TextField destIP; // Declare a Label component
+	private TextField routerServerIP; // Declare a Label component
 	private Button runServer; // Declare a Button component
 	private Button runClient; // Declare a Button component
 
+	
+	
 	public static void main(String[] args) {
 
 		new TCPNode();
 
 	}
 
-	public static void clientStuffs() throws IOException {
+	public static void clientStuffs(String routerName, String address) throws IOException {
 
 		// Variables for setting up connection and communication
 		Socket Socket = null; // socket to connect with ServerRouter
@@ -28,7 +41,7 @@ public class TCPNode extends Frame {
 		BufferedReader in = null; // for reading form ServerRouter
 		InetAddress addr = InetAddress.getLocalHost();
 		String host = addr.getHostAddress(); // Client machine's IP
-		String routerName = "ipaddress"; // ServerRouter host name
+		//String routerName = "ipaddress"; // ServerRouter host name
 		int SockNum = 5555; // port number
 
 		// Tries to connect to the ServerRouter
@@ -54,7 +67,7 @@ public class TCPNode extends Frame {
 																// string file
 		String fromServer; // messages received from ServerRouter
 		String fromUser; // messages sent to ServerRouter
-		String address = "ipaddress"; // destination IP (Server)
+		//String address = "ipaddress"; // destination IP (Server)
 		long t0, t1, t;
 
 		// Communication process (initial sends/receives
@@ -90,14 +103,14 @@ public class TCPNode extends Frame {
 		Socket.close();
 	}
 
-	public static void serverStuffs() throws IOException {
+	public static void serverStuffs(String routerName, String address) throws IOException {
 		// Variables for setting up connection and communication
 		Socket Socket = null; // socket to connect with ServerRouter
 		PrintWriter out = null; // for writing to ServerRouter
 		BufferedReader in = null; // for reading form ServerRouter
 		InetAddress addr = InetAddress.getLocalHost();
 		String host = addr.getHostAddress(); // Server machine's IP
-		String routerName = "ipaddress"; // ServerRouter host name
+		//String routerName = "ipaddress"; // ServerRouter host name
 		int SockNum = 5555; // port number
 
 		// Tries to connect to the ServerRouter
@@ -116,7 +129,7 @@ public class TCPNode extends Frame {
 		// Variables for message passing
 		String fromServer; // messages sent to ServerRouter
 		String fromClient; // messages received from ServerRouter
-		String address = "ipaddress"; // destination IP (Client)
+		//String address = "ipaddress"; // destination IP (Client)
 
 		// Communication process (initial sends/receives)
 		out.println(address);// initial send (IP of the destination Client)
@@ -145,13 +158,28 @@ public class TCPNode extends Frame {
 	}
 
 	public TCPNode() {
-	      setLayout(new FlowLayout());
+	      setLayout(new GridLayout(2,5));
 	         // "super" Frame (a Container) sets its layout to FlowLayout, which arranges
 	         // the components from left-to-right, and flow to next row from top-to-bottom.
-	 
 
+	      this.setSize(300, 300);
+	      
+	      add(new Label("Router Server IP Address"));
+	      add(new Label("Dest. IP Address"));
+	      add(new Label("String to Send"));
+	      add(new Label("----"));
+	      add(new Label("----"));
+	      
+	      
+	      routerServerIP = new TextField("255.255.255.255");  // construct the Label component	      
+	      add(routerServerIP);
+	      
+	      destIP = new TextField("255.255.255.255");  // construct the Label component	      
+	      add(destIP);
+	      
+	      
 	      sendString = new TextField("string");  // construct the Label component	      
-	      add(sendString);                    // "super" Frame adds Label
+	      add(sendString);
 	      
 	      
 	      runClient = new Button("Run Client");  // construct the Label component
@@ -164,12 +192,7 @@ public class TCPNode extends Frame {
 	      add(runServer); // "super" Frame adds Label
 	      runServer.addActionListener(new goServer());
 	      
-	      
-	      setTitle("TEST");  // "super" Frame sets its title
-	      setSize(200, 100);        // "super" Frame sets its initial window size
-	 
-	 
-	      setVisible(true);         // "super" Frame shows
+
 	 
 
 	}
@@ -178,7 +201,16 @@ public class TCPNode extends Frame {
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			try {
-				serverStuffs();
+				routerName = routerServerIP.getText();
+				address = destIP.getText();
+				
+				//create file.txt
+				PrintWriter writer = new PrintWriter("FilePath\\file.txt", "UTF-8");
+				writer.println(sendString.getText());
+				writer.close();
+
+				
+				serverStuffs(routerName, address);
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -190,7 +222,15 @@ public class TCPNode extends Frame {
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			try {
-				clientStuffs();
+				routerName = routerServerIP.getText();
+				address = destIP.getText();
+				
+				//create file.txt
+				PrintWriter writer = new PrintWriter("FilePath\\file.txt", "UTF-8");
+				writer.println(sendString.getText());
+				writer.close();
+				
+				clientStuffs(routerName, address);
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
