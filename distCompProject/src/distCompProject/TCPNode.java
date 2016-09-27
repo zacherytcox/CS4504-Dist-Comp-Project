@@ -6,20 +6,20 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.awt.*;
 import java.awt.event.*;
 import java.applet.Applet;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.lang.Integer;
 
 public class TCPNode extends Applet {
 
 	final String HOMEPATH = "FilePath\\";
-	private String routerName, address;
-	private Label strRouterServerIP; // Declare a Label component	
-	private Label strDestIP; // Declare a Label component	
-	private Label strSendString; // Declare a Label component	
+	private String routerName, address, sock;
 	private TextField sendString; // Declare a Label component
+	private TextField destSock; // Declare a Label component
+	private TextField routerServerSock; // Declare a Label component
 	private TextField destIP; // Declare a Label component
 	private TextField routerServerIP; // Declare a Label component
 	private Button runServer; // Declare a Button component
@@ -33,7 +33,7 @@ public class TCPNode extends Applet {
 
 	}
 
-	public static void clientStuffs(String routerName, String address) throws IOException {
+	public static void clientStuffs(String routerName, String address, Path tempFile, String sock) throws IOException {
 
 		// Variables for setting up connection and communication
 		Socket Socket = null; // socket to connect with ServerRouter
@@ -42,7 +42,7 @@ public class TCPNode extends Applet {
 		InetAddress addr = InetAddress.getLocalHost();
 		String host = addr.getHostAddress(); // Client machine's IP
 		//String routerName = "ipaddress"; // ServerRouter host name
-		int SockNum = 5555; // port number
+		int SockNum = Integer.parseInt(sock); // port number
 
 		// Tries to connect to the ServerRouter
 		try {
@@ -59,8 +59,9 @@ public class TCPNode extends Applet {
 			System.exit(1);
 		}
 
+		
 		// Variables for message passing
-		Reader reader = new FileReader("FilePath\\file.txt"); // create a file
+		Reader reader = new FileReader(tempFile.toFile()); // create a file
 																// so it can be
 																// read?
 		BufferedReader fromFile = new BufferedReader(reader); // reader for the
@@ -103,7 +104,7 @@ public class TCPNode extends Applet {
 		Socket.close();
 	}
 
-	public static void serverStuffs(String routerName, String address) throws IOException {
+	public static void serverStuffs(String routerName, String address, String sock) throws IOException {
 		// Variables for setting up connection and communication
 		Socket Socket = null; // socket to connect with ServerRouter
 		PrintWriter out = null; // for writing to ServerRouter
@@ -111,7 +112,7 @@ public class TCPNode extends Applet {
 		InetAddress addr = InetAddress.getLocalHost();
 		String host = addr.getHostAddress(); // Server machine's IP
 		//String routerName = "ipaddress"; // ServerRouter host name
-		int SockNum = 5555; // port number
+		int SockNum = Integer.parseInt(sock); // port number
 
 		// Tries to connect to the ServerRouter
 		try {
@@ -158,7 +159,7 @@ public class TCPNode extends Applet {
 	}
 
 	public TCPNode() {
-	      setLayout(new GridLayout(2,5));
+	      setLayout(new GridLayout(2,7));
 	         // "super" Frame (a Container) sets its layout to FlowLayout, which arranges
 	         // the components from left-to-right, and flow to next row from top-to-bottom.
 
@@ -166,6 +167,8 @@ public class TCPNode extends Applet {
 	      
 	      add(new Label("Router Server IP Address"));
 	      add(new Label("Dest. IP Address"));
+	      add(new Label("Router Server Socket"));
+	      add(new Label("Dest. Socket"));
 	      add(new Label("String to Send"));
 	      add(new Label("----"));
 	      add(new Label("----"));
@@ -174,8 +177,17 @@ public class TCPNode extends Applet {
 	      routerServerIP = new TextField("255.255.255.255");  // construct the Label component	      
 	      add(routerServerIP);
 	      
+	      
 	      destIP = new TextField("255.255.255.255");  // construct the Label component	      
 	      add(destIP);
+	      
+	      
+	      routerServerSock = new TextField("5555");  // construct the Label component	      
+	      add(routerServerSock);
+	      
+	      
+	      destSock = new TextField("5555");  // construct the Label component	      
+	      add(destSock);
 	      
 	      
 	      sendString = new TextField("string");  // construct the Label component	      
@@ -203,14 +215,10 @@ public class TCPNode extends Applet {
 			try {
 				routerName = routerServerIP.getText();
 				address = destIP.getText();
-				
-				//create file.txt
-				PrintWriter writer = new PrintWriter("FilePath\\file.txt", "UTF-8");
-				writer.println(sendString.getText());
-				writer.close();
+				sock = routerServerSock.getText();
 
+				serverStuffs(routerName, address, sock);
 				
-				serverStuffs(routerName, address);
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -224,18 +232,47 @@ public class TCPNode extends Applet {
 			try {
 				routerName = routerServerIP.getText();
 				address = destIP.getText();
+				sock = destSock.getText();
 				
-				//create file.txt
-				PrintWriter writer = new PrintWriter("FilePath\\file.txt", "UTF-8");
-				writer.println(sendString.getText());
-				writer.close();
+				//create temp file
+				Path tempFile = createTempFile(sendString);
+					
+				//TESTING				
+				//DELETES TEMP FILE WHILE TESTING		
+				//COMMENT OUT ON PROD MACHINE
+				//deleteTempFile(tempFile);
+		
+				clientStuffs(routerName, address, tempFile, sock);
 				
-				clientStuffs(routerName, address);
+				//deletes temp file after we are done with it
+				deleteTempFile(tempFile);
+
+				
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
+	}
+	
+	private static Path createTempFile(TextField sendString) throws IOException{
+		
+		
+		Path tempFile = Files.createTempFile("TCPNode.", null);
+		BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile.toFile()));
+		bw.write(sendString.getText());
+		bw.close();
+		System.out.println("Temp File Location: " + tempFile.toAbsolutePath());
+		return tempFile;
+		
+
+	}
+	
+	private static void deleteTempFile(Path tempFile) throws IOException{
+		
+		Files.delete(tempFile.toAbsolutePath());
+		System.out.println("Temp File deleted...");
+		
 	}
 
 }
