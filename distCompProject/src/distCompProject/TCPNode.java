@@ -6,24 +6,28 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JTextField;
+
 import java.awt.*;
 import java.awt.event.*;
-import java.applet.Applet;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.lang.Integer;
 
-public class TCPNode extends Applet {
+public class TCPNode extends JFrame {
 
 	final String HOMEPATH = "FilePath\\";
 	private String routerName, address, sock;
-	private TextField sendString; // Declare a Label component
-	private TextField destSock; // Declare a Label component
-	private TextField routerServerSock; // Declare a Label component
-	private TextField destIP; // Declare a Label component
-	private TextField routerServerIP; // Declare a Label component
-	private Button runServer; // Declare a Button component
-	private Button runClient; // Declare a Button component
+	private JTextField sendString; // Declare a Label component
+	private JTextField destSock; // Declare a Label component
+	private JTextField routerServerSock; // Declare a Label component
+	private JTextField destIP; // Declare a Label component
+	private JTextField routerServerIP; // Declare a Label component
+	private JButton runServer; // Declare a Button component
+	private JButton runClient; // Declare a Button component
 
 	
 	
@@ -159,51 +163,44 @@ public class TCPNode extends Applet {
 	}
 
 	public TCPNode() {
-	      setLayout(new GridLayout(2,7));
-	         // "super" Frame (a Container) sets its layout to FlowLayout, which arranges
-	         // the components from left-to-right, and flow to next row from top-to-bottom.
 
-	      this.setSize(300, 300);
-	      
-	      add(new Label("Router Server IP Address"));
-	      add(new Label("Dest. IP Address"));
-	      add(new Label("Router Server Socket"));
-	      add(new Label("Dest. Socket"));
-	      add(new Label("String to Send"));
-	      add(new Label("----"));
-	      add(new Label("----"));
-	      
-	      
-	      routerServerIP = new TextField("255.255.255.255");  // construct the Label component	      
-	      add(routerServerIP);
-	      
-	      
-	      destIP = new TextField("255.255.255.255");  // construct the Label component	      
-	      add(destIP);
-	      
-	      
-	      routerServerSock = new TextField("5555");  // construct the Label component	      
-	      add(routerServerSock);
-	      
-	      
-	      destSock = new TextField("5555");  // construct the Label component	      
-	      add(destSock);
-	      
-	      
-	      sendString = new TextField("string");  // construct the Label component	      
-	      add(sendString);
-	      
-	      
-	      runClient = new Button("Run Client");  // construct the Label component
-	      add(runClient);                    // "super" Frame adds Label
-	      runClient.addActionListener(new goClient());
-	      
-	      
-	      
-	      runServer = new Button("Run Server");  // construct the Label component
-	      add(runServer); // "super" Frame adds Label
-	      runServer.addActionListener(new goServer());
-	      
+		JFrame frame = new JFrame("APP");
+
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		frame.setLayout(new GridLayout(2, 7));
+
+		frame.add(new Label("Router Server IP Address"));
+		frame.add(new Label("Dest. IP Address"));
+		frame.add(new Label("Router Server Socket"));
+		frame.add(new Label("Dest. Socket"));
+		frame.add(new Label("String to Send"));
+		frame.add(new Label("----"));
+		frame.add(new Label("----"));
+
+		routerServerIP.setText("192.168.56.102");
+		frame.add(routerServerIP);
+		destIP.setText("192.168.56.103");
+		frame.add(destIP);
+		routerServerSock.setText("5555");
+		frame.add(routerServerSock);
+		destSock.setText("5555");
+		frame.add(destSock);
+		
+		sendString.setText("string");
+		frame.add(sendString);
+		
+		runClient.setText("Run as Client");
+		frame.add(runClient);
+		runClient.addActionListener(new goClient());
+		
+		runServer.setText("Run as Server");
+		frame.add(runServer);
+		runServer.addActionListener(new goServer());
+		
+		frame.setSize(1200, 100);
+
+		frame.setVisible(true);
 
 	 
 
@@ -255,7 +252,7 @@ public class TCPNode extends Applet {
 		}
 	}
 	
-	private static Path createTempFile(TextField sendString) throws IOException{
+	private static Path createTempFile(JTextField sendString) throws IOException{
 		
 		
 		Path tempFile = Files.createTempFile("TCPNode.", null);
