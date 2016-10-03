@@ -13,29 +13,73 @@ import javax.swing.JTextField;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.lang.Integer;
 
 public class TCPNode extends JFrame {
 
 	final String HOMEPATH = "FilePath\\";
 	private String routerName, address, sock;
-	private JTextField sendString; // Declare a Label component
-	private JTextField destSock; // Declare a Label component
-	private JTextField routerServerSock; // Declare a Label component
-	private JTextField destIP; // Declare a Label component
-	private JTextField routerServerIP; // Declare a Label component
-	private JButton runServer; // Declare a Button component
-	private JButton runClient; // Declare a Button component
+	private JTextField routerServerIP = new JTextField(); // Declare a Label component
+	private JTextField sendString = new JTextField(); // Declare a Label component
+	private JTextField destSock = new JTextField(); // Declare a Label component
+	private JTextField routerServerSock = new JTextField(); // Declare a Label component
+	private JTextField destIP = new JTextField(); // Declare a Label component
+	private JButton runServer = new JButton(); // Declare a Button component
+	private JButton runClient = new JButton(); // Declare a Button component
+	
 
 	
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 
 		new TCPNode();
+		//serverStuffs("1.1.1.1","1.1.1.1","5555");
+	}
+	
+	
+	private TCPNode() {
+
+		JFrame frame = new JFrame("APP");
+
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		frame.setLayout(new GridLayout(2, 7));
+
+		frame.add(new Label("Router Server IP Address"));
+		frame.add(new Label("Dest. IP Address"));
+		frame.add(new Label("Router Server Socket"));
+		frame.add(new Label("Dest. Socket"));
+		frame.add(new Label("String to Send"));
+		frame.add(new Label("----"));
+		frame.add(new Label("----"));
+
+		routerServerIP.setText("192.168.56.102");
+		frame.add(routerServerIP);
+		destIP.setText("192.168.56.103");
+		frame.add(destIP);
+		routerServerSock.setText("5555");
+		frame.add(routerServerSock);
+		destSock.setText("5555");
+		frame.add(destSock);
+		
+		sendString.setText("string");
+		frame.add(sendString);
+		
+		runClient.setText("Run as Client");
+		frame.add(runClient);
+		runClient.addActionListener(new goClient());
+		
+		runServer.setText("Run as Server");
+		frame.add(runServer);
+		runServer.addActionListener(new goServer());
+		
+		frame.setSize(1200, 100);
+
+		frame.setVisible(true);
 
 	}
+
+	
 
 	public static void clientStuffs(String routerName, String address, Path tempFile, String sock) throws IOException {
 
@@ -159,50 +203,6 @@ public class TCPNode extends JFrame {
 		out.close();
 		in.close();
 		Socket.close();
-
-	}
-
-	public TCPNode() {
-
-		JFrame frame = new JFrame("APP");
-
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		frame.setLayout(new GridLayout(2, 7));
-
-		frame.add(new Label("Router Server IP Address"));
-		frame.add(new Label("Dest. IP Address"));
-		frame.add(new Label("Router Server Socket"));
-		frame.add(new Label("Dest. Socket"));
-		frame.add(new Label("String to Send"));
-		frame.add(new Label("----"));
-		frame.add(new Label("----"));
-
-		routerServerIP.setText("192.168.56.102");
-		frame.add(routerServerIP);
-		destIP.setText("192.168.56.103");
-		frame.add(destIP);
-		routerServerSock.setText("5555");
-		frame.add(routerServerSock);
-		destSock.setText("5555");
-		frame.add(destSock);
-		
-		sendString.setText("string");
-		frame.add(sendString);
-		
-		runClient.setText("Run as Client");
-		frame.add(runClient);
-		runClient.addActionListener(new goClient());
-		
-		runServer.setText("Run as Server");
-		frame.add(runServer);
-		runServer.addActionListener(new goServer());
-		
-		frame.setSize(1200, 100);
-
-		frame.setVisible(true);
-
-	 
 
 	}
 
