@@ -5,7 +5,7 @@ import java.io.*;
 
 public class TCPServerRouter {
     public static void main(String[] args) throws IOException {
-        Socket clientSocket = null; // socket for the thread
+        Socket nodeSocket = null; // socket for the thread
         Object [][] RoutingTable = new Object [10][2]; // routing table
         int SockNum = 5555; // port number
         Boolean Running = true;
@@ -25,11 +25,11 @@ public class TCPServerRouter {
         // Creating threads with accepted connections
         while (Running == true){
             try {
-                clientSocket = serverSocket.accept();
-                SThread t = new SThread(RoutingTable, clientSocket, ind); // creates a thread with a random port
+                nodeSocket = serverSocket.accept();
+                SThread t = new SThread(RoutingTable, nodeSocket, ind); // creates a thread with a random port
                 t.start(); // starts the thread
                 ind++; // increments the index
-                System.out.println("ServerRouter connected with Client/Server: " + clientSocket.getInetAddress().getHostAddress());
+                System.out.println("ServerRouter connected with Client/Server: " + nodeSocket.getInetAddress().getHostAddress());
             }
             catch (IOException e) {
                 System.err.println("Client/Server failed to connect.");
@@ -38,7 +38,7 @@ public class TCPServerRouter {
         }//end while
         
         //closing connections
-        clientSocket.close();
+        nodeSocket.close();
         serverSocket.close();
 
     }
