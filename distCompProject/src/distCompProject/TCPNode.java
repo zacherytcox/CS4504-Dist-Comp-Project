@@ -12,7 +12,7 @@ import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
-import java.lang.Object;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.Integer;
@@ -112,7 +112,7 @@ public class TCPNode extends JFrame {
 			
 			// Variables for message passing
 			Reader reader = new FileReader(tempFile.toFile()); // create a file
-																	// so it can be
+			System.out.println("Reading File...");														// so it can be
 																	// read?
 			BufferedReader fromFile = new BufferedReader(reader); // reader for the
 																	// string file
@@ -142,8 +142,7 @@ public class TCPNode extends JFrame {
 				fromUser = fromFile.readLine(); // reading strings from a file
 				if (fromUser != null) {
 					
-					
-					int fileSize = tempFile.toFile().toString().getBytes().length;
+					long fileSize = tempFile.toFile().length();
 					
 					System.out.println("String Size: " + fileSize);
 					
@@ -151,6 +150,7 @@ public class TCPNode extends JFrame {
 					out.println(fromUser); // sending the strings to the Server via
 											// ServerRouter
 					t0 = System.currentTimeMillis();
+					return;
 				}
 			}
 	
@@ -173,11 +173,11 @@ public class TCPNode extends JFrame {
 			BufferedReader in = null; // for reading form ServerRouter
 			InetAddress addr = InetAddress.getLocalHost();
 			String host = addr.getHostAddress(); // Server machine's IP
-			//String routerName = "ipaddress"; // ServerRouter host name
 			int SockNum = Integer.parseInt(sock); // port number
 	
 			// Tries to connect to the ServerRouter
 			try {
+				System.out.println("Connect to ServerRouter...");	
 				Socket = new Socket(routerName, SockNum);
 				out = new PrintWriter(Socket.getOutputStream(), true);
 				in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
@@ -192,30 +192,38 @@ public class TCPNode extends JFrame {
 			}
 	
 			// Variables for message passing
-			String fromServer; // messages sent to ServerRouter
-			String fromClient; // messages received from ServerRouter
+			String fromServer = ""; // messages sent to ServerRouter
+			String fromClient = ""; // messages received from ServerRouter
 			//String address = "ipaddress"; // destination IP (Client)
 	
+			System.out.println("Send my Dest Ip to ServerRouter so he knows where Im sending my stuff...");	
 			// Communication process (initial sends/receives)
 			out.println(address);// initial send (IP of the destination Client)
+			System.out.println("Waiting for ServerRouter to send verification to me...");	
 			fromClient = in.readLine();// initial receive from router (verification
 										// of connection)
+			System.out.println("Got verification...");	
 			System.out.println("ServerRouter: " + fromClient);
 	
 			// Communication while loop
 			while ((fromClient = in.readLine()) != null) {
+				System.out.println("Started my loop of in.readLine while its not null...");	
 				System.out.println("Client said: " + fromClient);
 				if (fromClient.equals("Bye.")) { // exit statement
+					System.out.println("byeeee");	
 					break;
 				}
 				fromServer = fromClient.toUpperCase(); // converting received
 														// message to upper case
+				System.out.println("Just Uppered the string");	
 				System.out.println("Server said: " + fromServer);
 				out.println(fromServer); // sending the converted message back to
 											// the Client via ServerRouter
+				System.out.println("Sent coverted message back to Client via ServerRouter");	
 			}
 	
 			// closing connections
+			System.out.println("Closing my sockets...");	
 			out.close();
 			in.close();
 			Socket.close();
