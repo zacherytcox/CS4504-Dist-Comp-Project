@@ -12,7 +12,7 @@ import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
-
+import java.lang.Object;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.Integer;
@@ -142,7 +142,8 @@ public class TCPNode extends JFrame {
 				fromUser = fromFile.readLine(); // reading strings from a file
 				if (fromUser != null) {
 					
-					long fileSize = tempFile.toFile().length();
+					
+					int fileSize = tempFile.toFile().toString().getBytes().length;
 					
 					System.out.println("String Size: " + fileSize);
 					
