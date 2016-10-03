@@ -101,10 +101,10 @@ public class TCPNode extends JFrame {
 			in = new BufferedReader(new InputStreamReader(Socket.getInputStream())); 
 		} catch (UnknownHostException e) { // dont know the router
 			System.err.println("Client: Don't know about router: " + routerName);
-			System.exit(1);
+			return;
 		} catch (IOException e) { // cant get data stream
 			System.err.println("Client: Couldn't get I/O for the connection to: " + routerName);
-			System.exit(1);
+			return;
 		}
 
 		
@@ -169,10 +169,12 @@ public class TCPNode extends JFrame {
 			in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
 		} catch (UnknownHostException e) {
 			System.err.println("Server: Don't know about router: " + routerName);
-			System.exit(1);
+			return;
+			
 		} catch (IOException e) {
 			System.err.println("Server: Couldn't get I/O for the connection to: " + routerName);
-			System.exit(1);
+			return;
+			
 		}
 
 		// Variables for message passing
