@@ -1,5 +1,9 @@
 package distCompProject;
 
+//Author: Zachery Cox
+//Date: 10/4/16
+
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -11,7 +15,6 @@ import java.nio.file.Path;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
-
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.Integer;
@@ -35,7 +38,6 @@ public class TCPNode extends JFrame {
 	public static void main(String[] args) throws IOException {
 
 		new TCPNode();
-		//serverStuffs("1.1.1.1","1.1.1.1","5555");
 	}
 	
 	
@@ -128,6 +130,7 @@ public class TCPNode extends JFrame {
 			out.println(address);// initial send (IP of the destination Server)
 			fromServer = in.readLine();// initial receive from router (verification
 										// of connection)
+
 			System.out.println("ServerRouter: " + fromServer);
 			out.println(host); // Client sends the IP of its machine as initial send
 			t0 = System.currentTimeMillis();

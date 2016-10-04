@@ -3,6 +3,7 @@ package distCompProject;
 import java.io.*;
 import java.net.*;
 import java.lang.Exception;
+import java.util.Arrays;
 
 	
 public class SThread extends Thread {
@@ -24,7 +25,7 @@ public class SThread extends Thread {
         ind = index;
 	}
 	
-    private static void removeTableEntry(Object [][] table, String ip){
+    private static void removeTableEntry(Object [][] table, String ip, int ind){
     	
     	// loops through the routing table to find the destination
 		for ( int i=0; i<10; i++){
@@ -34,18 +35,21 @@ public class SThread extends Thread {
 				System.out.println("Removed " + ip + " from Routing Table...");
 			}
 		}
-    	
-    	
-    	
+    	   	
     }
 	
 	// Run method (will run for each machine that connects to the ServerRouter)
 	public void run(){
 		try{
+			
+			
+			//IF IS SERVER, IF "SERVER", THE DO
+			//ELSE, AKA CLIENT, IT IS DEST.
 			// Initial sends/receives
 			destination = in.readLine(); // initial read (the destination for writing)
 			System.out.println(addr + " Wants to forward to " + destination);
 			out.println("Connected to the router."); // confirmation of connection
+			
 		
 			// waits 10 seconds to let the routing table fill with all machines' information
 			try{
@@ -56,8 +60,9 @@ public class SThread extends Thread {
 			}
 			
 
-			
 			System.out.println(addr + " Thread Created...");
+            System.out.println();
+            System.out.println();
 			
 			// Communication loop	
 			while ((inputLine = in.readLine()) != null) {
@@ -69,25 +74,32 @@ public class SThread extends Thread {
 						System.out.println("Found destination: " + destination);
 						outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
 					}
+
 				}
+				
+				
 				
 				System.out.println("Node " + addr + " said: " + inputLine);
 				if (inputLine.toString().equals("Thread Bye.")){ // exit statement
 					System.out.println("Thread Terminated for: " + addr);
-					removeTableEntry(RTable, addr);
+					removeTableEntry(RTable, addr, ind);
 					break;
 				}
 				outputLine = inputLine; // passes the input from the machine to the output string for the destination
 					
 				if ( outSocket != null){				
 					outTo.println(outputLine); // writes to the destination
+					System.out.println("");
 				}		
-				System.out.println("..finish a while loop iteration..");
 			}// end while		 
 		}// end try
 		catch (IOException e) {
 			System.err.println("Could not listen to socket.");
-			System.exit(1);
-        }
+			return;
+        } catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 }

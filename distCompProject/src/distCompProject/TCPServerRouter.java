@@ -9,7 +9,7 @@ public class TCPServerRouter {
         Object [][] RoutingTable = new Object [10][2]; // routing table
         int SockNum = 5555; // port number
         Boolean Running = true;
-        int ind = 0; // indext in the routing table	
+        int ind; // indext in the routing table	
 
         //Accepting connections
         ServerSocket serverSocket = null; // server socket for accepting connections
@@ -26,16 +26,20 @@ public class TCPServerRouter {
         while (Running == true){
             try {
                 nodeSocket = serverSocket.accept();
+                ind = getNonNullArrayLenth(RoutingTable);
                 SThread t = new SThread(RoutingTable, nodeSocket, ind); // creates a thread with a random port
                 t.start(); // starts the thread
-                ind++; // increments the index
                 System.out.println("ServerRouter connected with Node: " + nodeSocket.getInetAddress().getHostAddress());
+                System.out.println();
+                System.out.println();
             }
             catch (IOException e) {
-                System.err.println("Node failed to connect.");
-                System.exit(1);
+                System.err.println("Node failed to connect: " + e);
+                return;
             }
         }//end while
+        
+        
         
         //closing connections
         nodeSocket.close();
@@ -43,18 +47,18 @@ public class TCPServerRouter {
 
     }
     
-    private static void removeTableEntry(Object [][] table, String ip){
+    
+    private static int getNonNullArrayLenth(Object [][] table){
     	
-    	// loops through the routing table to find the destination
-		for ( int i=0; i<10; i++){
-			if (ip.equals((String) table[i][0])){
-				table[i][0] = null;
-				table[i][1] = null;
-				System.out.println("Removed " + ip + " from Routing Table...");
-			}
-		}
-    	
-    	
-    	
+    	for(int i = 0; i<10; i++){
+    		if(table[i][0] == null){
+    			return i;
+    		}
+    	}
+    	    	
+    	return table.length;
     }
+    
+    
+    
 }
