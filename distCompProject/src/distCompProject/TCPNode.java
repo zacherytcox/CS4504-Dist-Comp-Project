@@ -12,6 +12,8 @@ import java.net.UnknownHostException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
@@ -22,7 +24,7 @@ import java.lang.Integer;
 @SuppressWarnings("serial")
 public class TCPNode extends JFrame {
 
-	final String HOMEPATH = "FilePath\\";
+	final static String logPath = "C:\\Users\\Zach\\Documents\\GitHubProjects\\CS4504-Dist-Comp-Project\\distCompProject";
 	private String routerName, address, sock;
 	private JTextField routerServerIP = new JTextField(); // Declare a Label component
 	private JTextField sendString = new JTextField(); // Declare a Label component
@@ -38,6 +40,7 @@ public class TCPNode extends JFrame {
 	public static void main(String[] args) throws IOException {
 
 		new TCPNode();
+		
 	}
 	
 	
@@ -160,6 +163,9 @@ public class TCPNode extends JFrame {
 					System.out.println("String Size: " + fileSize);
 					
 					System.out.println("Client: " + fromUser);
+					
+					addToLogFile(fromUser.toString(), t, fileSize);
+					
 					out.println(fromUser); // sending the strings to the Server via
 											// ServerRouter
 					t0 = System.currentTimeMillis();
@@ -323,4 +329,16 @@ public class TCPNode extends JFrame {
 		
 	}
 
+	private static void addToLogFile(String line, long time, long size) throws IOException{
+		try{
+			Path logFile = Paths.get(logPath + "\\logFile.csv");
+			BufferedWriter bw = new BufferedWriter(new FileWriter(logFile.toFile().getName(), true));
+			bw.append(line + "," + time + "," + size + "\n");
+			bw.close();
+		}catch(FileNotFoundException e){
+			System.err.println(e);
+			
+		}
+	}
+	
 }
