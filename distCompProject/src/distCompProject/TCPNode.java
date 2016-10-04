@@ -8,7 +8,6 @@ import java.net.UnknownHostException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.io.File;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
@@ -17,13 +16,14 @@ import java.awt.*;
 import java.awt.event.*;
 import java.lang.Integer;
 
+@SuppressWarnings("serial")
 public class TCPNode extends JFrame {
 
 	final String HOMEPATH = "FilePath\\";
 	private String routerName, address, sock;
 	private JTextField routerServerIP = new JTextField(); // Declare a Label component
 	private JTextField sendString = new JTextField(); // Declare a Label component
-	private JTextField destSock = new JTextField(); // Declare a Label component
+	private JTextField mySock = new JTextField(); // Declare a Label component
 	private JTextField routerServerSock = new JTextField(); // Declare a Label component
 	private JTextField destIP = new JTextField(); // Declare a Label component
 	private JButton runServer = new JButton(); // Declare a Button component
@@ -50,19 +50,22 @@ public class TCPNode extends JFrame {
 		frame.add(new Label("Router Server IP Address"));
 		frame.add(new Label("Dest. IP Address"));
 		frame.add(new Label("Router Server Socket"));
-		frame.add(new Label("Dest. Socket"));
+		frame.add(new Label("My Socket"));
 		frame.add(new Label("String to Send"));
-		frame.add(new Label("----"));
-		frame.add(new Label("----"));
+		frame.add(new Label("Operate as ClientNode"));
+		frame.add(new Label("Operate as ServerNode"));
 
 		routerServerIP.setText("192.168.56.102");
 		frame.add(routerServerIP);
+		
 		destIP.setText("192.168.56.103");
 		frame.add(destIP);
+		
 		routerServerSock.setText("5555");
 		frame.add(routerServerSock);
-		destSock.setText("5555");
-		frame.add(destSock);
+		
+		mySock.setText("5555");
+		frame.add(mySock);
 		
 		sendString.setText("string");
 		frame.add(sendString);
@@ -132,15 +135,22 @@ public class TCPNode extends JFrame {
 			// Communication while loop
 			while ((fromServer = in.readLine()) != null) {
 				System.out.println("Server: " + fromServer);
+				System.out.println();
 				t1 = System.currentTimeMillis();
-				if (fromServer.equals("Bye.")) { // exit statement
+				if (fromServer.toString().equals("Bye.")) { // exit statement
+					System.out.println("Bye.");		
+					out.println("Bye.");
+					out.println("Thread Bye.");
 					break;
 				}
-				t = t1 - t0;
-				System.out.println("Cycle time: " + t);
+
 	
 				fromUser = fromFile.readLine(); // reading strings from a file
 				if (fromUser != null) {
+					
+					t = t1 - t0;
+					
+					System.out.println("Cycle time: " + t);
 					
 					long fileSize = tempFile.toFile().length();
 					
@@ -150,11 +160,19 @@ public class TCPNode extends JFrame {
 					out.println(fromUser); // sending the strings to the Server via
 											// ServerRouter
 					t0 = System.currentTimeMillis();
-					return;
+					
+					
 				}
+				else{
+					out.println("Bye.");
+					out.println("Thread Bye.");
+				}
+
 			}
 	
+			System.out.println("Closing Sockets...");
 			// closing connections
+			fromFile.close();
 			out.close();
 			in.close();
 			Socket.close();
@@ -196,34 +214,33 @@ public class TCPNode extends JFrame {
 			String fromClient = ""; // messages received from ServerRouter
 			//String address = "ipaddress"; // destination IP (Client)
 	
-			System.out.println("Send my Dest Ip to ServerRouter so he knows where Im sending my stuff...");	
+			
 			// Communication process (initial sends/receives)
 			out.println(address);// initial send (IP of the destination Client)
-			System.out.println("Waiting for ServerRouter to send verification to me...");	
 			fromClient = in.readLine();// initial receive from router (verification
 										// of connection)
-			System.out.println("Got verification...");	
 			System.out.println("ServerRouter: " + fromClient);
 	
 			// Communication while loop
 			while ((fromClient = in.readLine()) != null) {
-				System.out.println("Started my loop of in.readLine while its not null...");	
 				System.out.println("Client said: " + fromClient);
-				if (fromClient.equals("Bye.")) { // exit statement
-					System.out.println("byeeee");	
+				if (fromClient.toString().equals("Bye.")) { // exit statement
+					System.out.println("Bye.");
+					out.println("Bye.");
+					out.println("Thread Bye.");
 					break;
 				}
+
 				fromServer = fromClient.toUpperCase(); // converting received
 														// message to upper case
-				System.out.println("Just Uppered the string");	
 				System.out.println("Server said: " + fromServer);
 				out.println(fromServer); // sending the converted message back to
 											// the Client via ServerRouter
-				System.out.println("Sent coverted message back to Client via ServerRouter");	
+				System.out.println();
 			}
 	
 			// closing connections
-			System.out.println("Closing my sockets...");	
+			System.out.println("Closing Sockets...");	
 			out.close();
 			in.close();
 			Socket.close();
@@ -256,7 +273,7 @@ public class TCPNode extends JFrame {
 			try {
 				routerName = routerServerIP.getText();
 				address = destIP.getText();
-				sock = destSock.getText();
+				sock = mySock.getText();
 				
 				//create temp file
 				Path tempFile = createTempFile(sendString);

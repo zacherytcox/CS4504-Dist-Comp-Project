@@ -24,12 +24,27 @@ public class SThread extends Thread {
         ind = index;
 	}
 	
+    private static void removeTableEntry(Object [][] table, String ip){
+    	
+    	// loops through the routing table to find the destination
+		for ( int i=0; i<10; i++){
+			if (ip.equals((String) table[i][0])){
+				table[i][0] = null;
+				table[i][1] = null;
+				System.out.println("Removed " + ip + " from Routing Table...");
+			}
+		}
+    	
+    	
+    	
+    }
+	
 	// Run method (will run for each machine that connects to the ServerRouter)
 	public void run(){
 		try{
 			// Initial sends/receives
 			destination = in.readLine(); // initial read (the destination for writing)
-			System.out.println("Forwarding to " + destination);
+			System.out.println(addr + " Wants to forward to " + destination);
 			out.println("Connected to the router."); // confirmation of connection
 		
 			// waits 10 seconds to let the routing table fill with all machines' information
@@ -40,26 +55,34 @@ public class SThread extends Thread {
 				System.out.println("Thread interrupted");
 			}
 			
-			// loops through the routing table to find the destination
-			for ( int i=0; i<10; i++){
-				if (destination.equals((String) RTable[i][0])){
-					outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
-					System.out.println("Found destination: " + destination);
-					outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
-				}
-			}
+
+			
+			System.out.println(addr + " Thread Created...");
 			
 			// Communication loop	
 			while ((inputLine = in.readLine()) != null) {
-				System.out.println("Client/Server said: " + inputLine);
-				if (inputLine.equals("Bye.")){ // exit statement
+				
+				// loops through the routing table to find the destination
+				for ( int i=0; i<10; i++){
+					if (destination.equals((String) RTable[i][0])){
+						outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
+						System.out.println("Found destination: " + destination);
+						outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
+					}
+				}
+				
+				System.out.println("Node " + addr + " said: " + inputLine);
+				if (inputLine.toString().equals("Thread Bye.")){ // exit statement
+					System.out.println("Thread Terminated for: " + addr);
+					removeTableEntry(RTable, addr);
 					break;
 				}
 				outputLine = inputLine; // passes the input from the machine to the output string for the destination
 					
 				if ( outSocket != null){				
 					outTo.println(outputLine); // writes to the destination
-				}			
+				}		
+				System.out.println("..finish a while loop iteration..");
 			}// end while		 
 		}// end try
 		catch (IOException e) {

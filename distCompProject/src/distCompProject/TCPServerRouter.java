@@ -29,10 +29,10 @@ public class TCPServerRouter {
                 SThread t = new SThread(RoutingTable, nodeSocket, ind); // creates a thread with a random port
                 t.start(); // starts the thread
                 ind++; // increments the index
-                System.out.println("ServerRouter connected with Client/Server: " + nodeSocket.getInetAddress().getHostAddress());
+                System.out.println("ServerRouter connected with Node: " + nodeSocket.getInetAddress().getHostAddress());
             }
             catch (IOException e) {
-                System.err.println("Client/Server failed to connect.");
+                System.err.println("Node failed to connect.");
                 System.exit(1);
             }
         }//end while
@@ -41,5 +41,20 @@ public class TCPServerRouter {
         nodeSocket.close();
         serverSocket.close();
 
+    }
+    
+    private static void removeTableEntry(Object [][] table, String ip){
+    	
+    	// loops through the routing table to find the destination
+		for ( int i=0; i<10; i++){
+			if (ip.equals((String) table[i][0])){
+				table[i][0] = null;
+				table[i][1] = null;
+				System.out.println("Removed " + ip + " from Routing Table...");
+			}
+		}
+    	
+    	
+    	
     }
 }

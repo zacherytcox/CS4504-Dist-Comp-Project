@@ -1,5 +1,19 @@
 package distCompProject;
 
+
+//
+//Tried to implement a single thread that allows continuous communication
+//Couldnt figure out to separate the two different tasks while having the same ports open.
+//
+//
+//NO WORK
+//USE TCPNODE.JAVA
+//
+//
+//
+
+
+
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -8,7 +22,7 @@ import java.net.UnknownHostException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.io.File;
+
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
@@ -28,6 +42,7 @@ public class TCPNode2 extends JFrame {
 	private JTextField destIP = new JTextField(); // Declare a Label component
 	private JButton runServer = new JButton(); // Declare a Button component
 	private JButton runClient = new JButton(); // Declare a Button component
+	
 	
 
 	
@@ -73,7 +88,7 @@ public class TCPNode2 extends JFrame {
 		
 		runServer.setText("Run as Server");
 		frame.add(runServer);
-		//runServer.addActionListener(new goServer());
+		runServer.addActionListener(new sendStuffs());
 		
 		frame.setSize(1200, 100);
 
@@ -93,6 +108,8 @@ public class TCPNode2 extends JFrame {
 			String host = addr.getHostAddress(); // Client machine's IP
 			//String routerName = "ipaddress"; // ServerRouter host name
 			int SockNum = Integer.parseInt(sock); // port number
+			
+			
 	
 			// Tries to connect to the ServerRouter
 			try {
@@ -102,10 +119,10 @@ public class TCPNode2 extends JFrame {
 																		// data
 				in = new BufferedReader(new InputStreamReader(Socket.getInputStream())); 
 			} catch (UnknownHostException e) { // dont know the router
-				System.err.println("Client: Don't know about router: " + routerName);
+				System.err.println("ClientNode: Don't know about router: " + routerName);
 				return;
 			} catch (IOException e) { // cant get data stream
-				System.err.println("Client: Couldn't get I/O for the connection to: " + routerName);
+				System.err.println("ClientNode: Couldn't get I/O for the connection to: " + routerName);
 				return;
 			}
 	
@@ -115,6 +132,12 @@ public class TCPNode2 extends JFrame {
 			System.out.println("Reading File...");														// so it can be											// read?
 			BufferedReader fromFile = new BufferedReader(reader); // reader for the
 																	// string file
+			InputStreamReader is = new InputStreamReader(System.in);
+			BufferedReader consoleInput = new BufferedReader(is);
+			String input = "";
+
+			
+			
 			String fromServerRouter; // messages received from ServerRouter
 			String toServerRouter; // messages sent to ServerRouter
 			//String address = "ipaddress"; // destination IP (Server)
@@ -124,15 +147,17 @@ public class TCPNode2 extends JFrame {
 			out.println(address);// initial send (IP of the destination Server)
 			fromServerRouter = in.readLine();// initial receive from router (verification
 										// of connection)
-			System.out.println("ServerNode: " + fromServerRouter);
+			System.out.println("RouterServer: " + fromServerRouter);
 			out.println(host); // Client sends the IP of its machine as initial send
 			//t0 = System.currentTimeMillis();
 	
 			// Communication while loop
 			while ((fromServerRouter = in.readLine()) != null) {
+				
+				System.out.println(input.toString());
 				System.out.println("ServerNode: " + fromServerRouter);
 				//t1 = System.currentTimeMillis();
-				if (fromServerRouter.equals("Bye.")) { // exit statement
+				if (fromServerRouter.equals("Bye.") || input.toString().equals("done")) { // exit statement
 					break;
 				}
 				
@@ -142,14 +167,16 @@ public class TCPNode2 extends JFrame {
 				System.out.println("ServerNode");
 				out.println(toServerRouter);
 				
+				input = consoleInput.readLine().toString();
 				//toServerRouter = fromFile.readLine(); // reading strings from a file
-				if (toServerRouter != null) {
+				if (input.equals("send")) {
 					
 					long fileSize = tempFile.toFile().length();
 					//System.out.println("String Size: " + fileSize);
-					System.out.println("Client: " + toServerRouter);
+					System.out.println("ClientNode: " + toServerRouter);
 					out.println(toServerRouter); // sending the strings to the Server via
 					//t0 = System.currentTimeMillis();
+					
 				}
 			}
 	
@@ -198,6 +225,17 @@ public class TCPNode2 extends JFrame {
 			}
 		}
 	}
+	
+	
+	private static class sendStuffs implements ActionListener {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			
+		}
+	}
+
 	
 	private static Path createTempFile(JTextField sendString) throws IOException{
 		
