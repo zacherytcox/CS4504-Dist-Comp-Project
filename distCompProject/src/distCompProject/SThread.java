@@ -3,7 +3,6 @@ package distCompProject;
 import java.io.*;
 import java.net.*;
 import java.lang.Exception;
-import java.util.Arrays;
 
 	
 public class SThread extends Thread {
@@ -27,7 +26,7 @@ public class SThread extends Thread {
 	
     private static void removeTableEntry(Object [][] table, String ip, int ind){
     	
-    	// loops through the routing table to find the destination
+    	// loops through the routing table to find the route saved and delete it
 		for ( int i=0; i<10; i++){
 			if (ip.equals((String) table[i][0])){
 				table[i][0] = null;
@@ -39,12 +38,11 @@ public class SThread extends Thread {
     }
 	
 	// Run method (will run for each machine that connects to the ServerRouter)
+	@SuppressWarnings("static-access")
 	public void run(){
 		try{
 			
-			
-			//IF IS SERVER, IF "SERVER", THE DO
-			//ELSE, AKA CLIENT, IT IS DEST.
+
 			// Initial sends/receives
 			destination = in.readLine(); // initial read (the destination for writing)
 			System.out.println(addr + " Wants to forward to " + destination);
@@ -67,7 +65,7 @@ public class SThread extends Thread {
 			// Communication loop	
 			while ((inputLine = in.readLine()) != null) {
 				
-				// loops through the routing table to find the destination
+				// loops through the routing table to find the destination in the route table
 				for ( int i=0; i<10; i++){
 					if (destination.equals((String) RTable[i][0])){
 						outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
@@ -80,17 +78,23 @@ public class SThread extends Thread {
 				
 				
 				System.out.println("Node " + addr + " said: " + inputLine);
+				
+				//If "Thread Bye." gets sent, the thread will end
 				if (inputLine.toString().equals("Thread Bye.")){ // exit statement
 					System.out.println("Thread Terminated for: " + addr);
 					removeTableEntry(RTable, addr, ind);
 					break;
 				}
+				
+				
 				outputLine = inputLine; // passes the input from the machine to the output string for the destination
-					
+				
+				// if the socket is not null and actually has a port, it will send out the response from outputLine
 				if ( outSocket != null){				
 					outTo.println(outputLine); // writes to the destination
 					System.out.println("");
 				}		
+				
 			}// end while		 
 		}// end try
 		catch (IOException e) {

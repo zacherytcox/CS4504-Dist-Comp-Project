@@ -25,10 +25,19 @@ public class TCPServerRouter {
         // Creating threads with accepted connections
         while (Running == true){
             try {
+            	//create a block for a request from a node
                 nodeSocket = serverSocket.accept();
+                
+                //get the length of the routing table
                 ind = getNonNullArrayLenth(RoutingTable);
+                
+                //creates a new thread
                 SThread t = new SThread(RoutingTable, nodeSocket, ind); // creates a thread with a random port
+                
+                //executes the run method within the SThread object
                 t.start(); // starts the thread
+                
+                //data + space
                 System.out.println("ServerRouter connected with Node: " + nodeSocket.getInetAddress().getHostAddress());
                 System.out.println();
                 System.out.println();
@@ -47,9 +56,8 @@ public class TCPServerRouter {
 
     }
     
-    
+    //This method, given a table, will return the amount of non null values within table
     private static int getNonNullArrayLenth(Object [][] table){
-    	
     	for(int i = 0; i<10; i++){
     		if(table[i][0] == null){
     			return i;
