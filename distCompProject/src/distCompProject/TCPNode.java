@@ -127,18 +127,7 @@ public class TCPNode extends JFrame {
 			long t0, t1, t;
 	
 			// Communication process (initial sends/receives
-			
-			
-			
-			//lookup table variable times
-			long rtl0, rtl1, rtlt;
-			
-			//get initial time
-			//rtl0 = System.currentTimeMillis();
-			
-			
-			
-			
+					
 			out.println(address);// initial send (IP of the destination Server)
 			
 			fromServer = in.readLine();// initial receive from router (verification of connection)
@@ -192,7 +181,6 @@ public class TCPNode extends JFrame {
 					
 					
 					t0 = System.currentTimeMillis();
-					
 					
 				}
 				

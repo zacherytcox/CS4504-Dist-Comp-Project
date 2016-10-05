@@ -24,7 +24,7 @@ public class SThread extends Thread {
         ind = index;
 	}
 	
-    private static void removeTableEntry(Object [][] table, String ip, int ind){
+    private static void removeTableEntry(Object [][] table, String ip, int ind){    	
     	
     	// loops through the routing table to find the route saved and delete it
 		for ( int i=0; i<10; i++){
@@ -62,9 +62,20 @@ public class SThread extends Thread {
             System.out.println();
             System.out.println();
 			
+            
+    		
+    		
+    		//lookup table variable times
+    		long rtl0, rtl1, rtlt;
+            
+            
 			// Communication loop	
 			while ((inputLine = in.readLine()) != null) {
 				
+	    		
+	    		//get initial time
+	    		rtl0 = System.currentTimeMillis();
+	    		
 				// loops through the routing table to find the destination in the route table
 				for ( int i=0; i<10; i++){
 					if (destination.equals((String) RTable[i][0])){
@@ -72,10 +83,11 @@ public class SThread extends Thread {
 						System.out.println("Found destination: " + destination);
 						outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
 					}
-
 				}
 				
-				
+				rtl1 = rtl0 = System.currentTimeMillis();
+				rtlt = rtl0 - rtl1;
+				System.out.println(rtlt);
 				
 				System.out.println("Node " + addr + " said: " + inputLine);
 				
