@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
@@ -23,8 +24,8 @@ import java.lang.Integer;
 @SuppressWarnings("serial")
 public class TCPNode extends JFrame {
 
-	final static String logPath = "C:\\Users\\Zach\\Documents\\GitHubProjects\\CS4504-Dist-Comp-Project\\distCompProject";
 	private String routerName, address, sock;
+	private JTextField logPath = new JTextField(); // Declare a JTextField component
 	private JTextField routerServerIP = new JTextField(); // Declare a JTextField component
 	private JTextField sendString = new JTextField(); // Declare a JTextField component
 	private JTextField mySock = new JTextField(); // Declare a JTextField component
@@ -49,12 +50,13 @@ public class TCPNode extends JFrame {
 		//GUI  creation 
 		JFrame frame = new JFrame("TCPNode");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLayout(new GridLayout(2, 7));
+		frame.setLayout(new GridLayout(2, 8));
 		frame.add(new Label("Router Server IP Address"));
 		frame.add(new Label("Dest. IP Address"));
 		frame.add(new Label("Router Server Socket"));
 		frame.add(new Label("My Socket"));
 		frame.add(new Label("String to Send"));
+		frame.add(new Label("Path to LogFile Folder"));
 		frame.add(new Label("Operate as ClientNode"));
 		frame.add(new Label("Operate as ServerNode"));
 
@@ -73,6 +75,9 @@ public class TCPNode extends JFrame {
 		sendString.setText("string");
 		frame.add(sendString);
 		
+		logPath.setText("C:\\This\\Format\\Please");
+		frame.add(logPath);
+		
 		runClient.setText("Run as Client");
 		frame.add(runClient);
 		runClient.addActionListener(new goClient());
@@ -89,7 +94,7 @@ public class TCPNode extends JFrame {
 
 	
 	
-	public static void clientStuffs(String routerName, String address, Path tempFile, String sock) throws IOException {
+	public static void clientStuffs(String routerName, String address, Path tempFile, String sock, String logPath) throws IOException {
 		try{
 			// Variables for setting up connection and communication
 			Socket Socket = null; // socket to connect with ServerRouter
@@ -102,6 +107,8 @@ public class TCPNode extends JFrame {
 			// Tries to connect to the ServerRouter
 			try {
 				Socket = new Socket(routerName, SockNum); // opens port
+				//15 second timeout
+				Socket.setSoTimeout(15000);
 				out = new PrintWriter(Socket.getOutputStream(), true); // creates stream of data
 				in = new BufferedReader(new InputStreamReader(Socket.getInputStream())); 
 			} catch (UnknownHostException e) { // dont know the router
@@ -120,7 +127,7 @@ public class TCPNode extends JFrame {
 			//get buffered file data from read file
 			BufferedReader fromFile = new BufferedReader(reader); // reader for the
 																	// string file
-			String fromServer; // messages received from ServerRouter
+			String fromServer = null; // messages received from ServerRouter
 			String fromUser; // messages sent to ServerRouter
 			
 			//Cycle Time variables
@@ -130,8 +137,18 @@ public class TCPNode extends JFrame {
 					
 			out.println(address);// initial send (IP of the destination Server)
 			
-			fromServer = in.readLine();// initial receive from router (verification of connection)
-
+			try{
+				fromServer = in.readLine();// initial receive from router (verification of connection)
+			} catch (SocketTimeoutException e){
+				System.err.println("Timeout!");
+				// closing connections
+				fromFile.close();
+				out.close();
+				in.close();
+				Socket.close();
+				return;
+			}
+			
 			System.out.println("ServerRouter: " + fromServer);
 			out.println(host); // Client sends the IP of its machine as initial send
 			
@@ -139,57 +156,61 @@ public class TCPNode extends JFrame {
 			t0 = System.currentTimeMillis();
 	
 			// Communication while loop
-			while ((fromServer = in.readLine()) != null) {
-				System.out.println("Server: " + fromServer);
-				System.out.println();
-				t1 = System.currentTimeMillis();
+			try{
+				while ((fromServer = in.readLine()) != null) {
+					System.out.println("Server: " + fromServer);
+					System.out.println();
+					t1 = System.currentTimeMillis();
+		
+					//if receives "Bye." string, ends process
+					if (fromServer.toString().equals("Bye.")) { // exit statement
+						System.out.println("Bye.");		
+						out.println("Bye.");
+						out.println("Thread Bye.");
+						break;
+					}
 	
-				//if receives "Bye." string, ends process
-				if (fromServer.toString().equals("Bye.")) { // exit statement
-					System.out.println("Bye.");		
-					out.println("Bye.");
-					out.println("Thread Bye.");
-					break;
+					//reads data from temp file
+					fromUser = fromFile.readLine(); // reading strings from a file
+					
+					//if the file is not null
+					if (fromUser != null) {
+						
+						//get Cycle Time
+						t = t1 - t0;
+						
+						//print Cycle Time
+						System.out.println("Cycle time: " + t);
+						
+						//get the size of the file
+						long fileSize = tempFile.toFile().length();
+						
+						//print file size
+						System.out.println("String Size: " + fileSize);
+						
+					
+						System.out.println("Client: " + fromUser);
+						
+						//send log data to log file
+						addToLogFile(fromUser.toString(), t, fileSize, logPath);
+						
+						
+						out.println(fromUser); // sending the strings to the Server via ServerRouter
+						
+						
+						t0 = System.currentTimeMillis();
+						
+					}
+					
+					//else we are done and we say bye to serverNode and thread
+					else{
+						out.println("Bye.");
+						out.println("Thread Bye.");
+					}
+	
 				}
-
-				//reads data from temp file
-				fromUser = fromFile.readLine(); // reading strings from a file
-				
-				//if the file is not null
-				if (fromUser != null) {
-					
-					//get Cycle Time
-					t = t1 - t0;
-					
-					//print Cycle Time
-					System.out.println("Cycle time: " + t);
-					
-					//get the size of the file
-					long fileSize = tempFile.toFile().length();
-					
-					//print file size
-					System.out.println("String Size: " + fileSize);
-					
-				
-					System.out.println("Client: " + fromUser);
-					
-					//send log data to log file
-					addToLogFile(fromUser.toString(), t, fileSize);
-					
-					
-					out.println(fromUser); // sending the strings to the Server via ServerRouter
-					
-					
-					t0 = System.currentTimeMillis();
-					
-				}
-				
-				//else we are done and we say bye to serverNode and thread
-				else{
-					out.println("Bye.");
-					out.println("Thread Bye.");
-				}
-
+			}catch (SocketTimeoutException e){
+				System.err.println(e);
 			}
 	
 			System.out.println("Closing Sockets...");
@@ -287,8 +308,10 @@ public class TCPNode extends JFrame {
 				sock = routerServerSock.getText();
 
 				//do server stuffs
-				serverStuffs(routerName, address, sock);
-				
+				//keeps running because whenever a single compute is finished, it will reconnect to ServerRouter
+				while(1==1){
+					serverStuffs(routerName, address, sock);
+				}
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -313,7 +336,7 @@ public class TCPNode extends JFrame {
 				//COMMENT OUT ON PROD MACHINE
 				//deleteTempFile(tempFile);
 		
-				clientStuffs(routerName, address, tempFile, sock);
+				clientStuffs(routerName, address, tempFile, sock, logPath.toString());
 				
 				//deletes temp file after we are done with it
 				try{
@@ -353,7 +376,7 @@ public class TCPNode extends JFrame {
 	}
 
 	//this method, given the string, time, and size, will append data to csv log file
-	private static void addToLogFile(String line, long time, long size) throws IOException{
+	private static void addToLogFile(String line, long time, long size, String logPath) throws IOException{
 		try{
 			Path logFile = Paths.get(logPath + "\\logFile.csv");
 			BufferedWriter bw = new BufferedWriter(new FileWriter(logFile.toFile().getName(), true));
