@@ -1,5 +1,9 @@
 package distCompProject;
 
+//Author: Zachery Cox
+//Date: 10/6/16
+
+
 import java.io.*;
 import java.net.*;
 import java.lang.Exception;
@@ -12,9 +16,12 @@ public class SThread extends Thread {
 	private String inputLine, outputLine, destination, addr; // communication strings
 	private Socket outSocket; // socket for communicating with a destination
 	private int ind; // indext in the routing table
+	private static int timeout = 60000;
 
 	// Constructor
 	SThread(Object [][] Table, Socket toClient, int index) throws IOException{
+		
+		toClient.setSoTimeout(timeout);
         out = new PrintWriter(toClient.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(toClient.getInputStream()));
         RTable = Table;
@@ -44,7 +51,13 @@ public class SThread extends Thread {
 			
 
 			// Initial sends/receives
-			destination = in.readLine(); // initial read (the destination for writing)
+			try{
+				destination = in.readLine(); // initial read (the destination for writing)
+			}catch (SocketTimeoutException e) {
+				System.err.println(e);
+				out.println("Timeout.");
+				
+			}
 			System.out.println(addr + " Wants to forward to " + destination);
 			out.println("Connected to the router."); // confirmation of connection
 			
@@ -107,7 +120,8 @@ public class SThread extends Thread {
 					System.out.println("");
 				}		
 				
-			}// end while		 
+			}// end while	
+			
 		}// end try
 		catch (IOException e) {
 			System.err.println("Could not listen to socket.");

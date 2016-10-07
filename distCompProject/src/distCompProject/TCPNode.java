@@ -1,7 +1,7 @@
 package distCompProject;
 
 //Author: Zachery Cox
-//Date: 10/4/16
+//Date: 10/6/16
 
 
 import java.io.*;
@@ -33,6 +33,7 @@ public class TCPNode extends JFrame {
 	private JTextField destIP = new JTextField(); // Declare a JTextField component
 	private JButton runServer = new JButton(); // Declare a JButton component
 	private JButton runClient = new JButton(); // Declare a JButton component
+	private static int timeout = 60000;
 	
 
 	
@@ -107,8 +108,7 @@ public class TCPNode extends JFrame {
 			// Tries to connect to the ServerRouter
 			try {
 				Socket = new Socket(routerName, SockNum); // opens port
-				//15 second timeout
-				Socket.setSoTimeout(15000);
+				Socket.setSoTimeout(timeout);
 				out = new PrintWriter(Socket.getOutputStream(), true); // creates stream of data
 				in = new BufferedReader(new InputStreamReader(Socket.getInputStream())); 
 			} catch (UnknownHostException e) { // dont know the router
@@ -128,7 +128,7 @@ public class TCPNode extends JFrame {
 			BufferedReader fromFile = new BufferedReader(reader); // reader for the
 																	// string file
 			String fromServer = null; // messages received from ServerRouter
-			String fromUser; // messages sent to ServerRouter
+			String fromUser = null; // messages sent to ServerRouter
 			
 			//Cycle Time variables
 			long t0, t1, t;
@@ -139,6 +139,12 @@ public class TCPNode extends JFrame {
 			
 			try{
 				fromServer = in.readLine();// initial receive from router (verification of connection)
+				if(fromServer.toString().equals("Full.")){
+					System.err.println("Routing Table is full!");
+					fromFile.close();
+					Socket.close();
+					return;
+				}				
 			} catch (SocketTimeoutException e){
 				System.err.println("Timeout!");
 				// closing connections
@@ -169,9 +175,16 @@ public class TCPNode extends JFrame {
 						out.println("Thread Bye.");
 						break;
 					}
+					
+					else if(fromServer.toString().equals("Timeout.")){
+						out.println(fromUser);
+					}
+						
+					else{
 	
-					//reads data from temp file
-					fromUser = fromFile.readLine(); // reading strings from a file
+						//reads data from temp file
+						fromUser = fromFile.readLine(); // reading strings from a file
+					}
 					
 					//if the file is not null
 					if (fromUser != null) {
@@ -233,15 +246,16 @@ public class TCPNode extends JFrame {
 			// Variables for setting up connection and communication
 			Socket Socket = null; // socket to connect with ServerRouter
 			PrintWriter out = null; // for writing to ServerRouter
-			BufferedReader in = null; // for reading form ServerRouter
-			InetAddress addr = InetAddress.getLocalHost();
-			String host = addr.getHostAddress(); // Server machine's IP
+			BufferedReader in = null; // for reading from ServerRouter
+			//InetAddress addr = InetAddress.getLocalHost();
+			//String host = addr.getHostAddress(); // Server machine's IP
 			int SockNum = Integer.parseInt(sock); // port number
 	
 			// Tries to connect to the ServerRouter
 			try {
 				System.out.println("Connect to ServerRouter...");	
 				Socket = new Socket(routerName, SockNum);
+				Socket.setSoTimeout(timeout);
 				out = new PrintWriter(Socket.getOutputStream(), true);
 				in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
 			} catch (UnknownHostException e) {
@@ -260,30 +274,58 @@ public class TCPNode extends JFrame {
 			
 			// Communication process (initial sends/receives)
 			out.println(address);// initial send (IP of the destination Client)
-			fromClient = in.readLine();// initial receive from router (verification of connection)
+			try{
+
+				fromClient = in.readLine();// initial receive from router (verification of connection)
+				if(fromServer.toString().equals("Full.")){
+					System.err.println("Routing Table is full!");
+					Socket.close();
+					return;
+				}
+
+			}catch(SocketTimeoutException e){
+				System.err.println(e);
+				Socket.close();
+				return;
+			}
 			System.out.println("ServerRouter: " + fromClient);
 	
-			// Communication while loop
-			while ((fromClient = in.readLine()) != null) {
-				System.out.println("Client said: " + fromClient);
-				
-				//if receives "Bye.", it will end client and thread
-				if (fromClient.toString().equals("Bye.")) { // exit statement
-					System.out.println("Bye.");
-					out.println("Bye.");
-					out.println("Thread Bye.");
-					break;
+			try{
+				// Communication while loop
+				while ((fromClient = in.readLine()) != null) {
+					System.out.println("Client said: " + fromClient);
+					
+					//if receives "Bye.", it will end client and thread
+					if (fromClient.toString().equals("Bye.")) { // exit statement
+						System.out.println("Bye.");
+						out.println("Bye.");
+						out.println("Thread Bye.");
+						break;
+					}
+					
+					else if (fromClient.toString().equals("Timeout.")){
+						out.println(fromServer);
+						System.err.println("Timeout! Resend!");
+						
+					}
+					
+					else{
+					
+						//operation, in this case turn to uppercase
+						fromServer = fromClient.toUpperCase(); // converting received message to upper case
+						
+						System.out.println("Server said: " + fromServer);
+						
+						out.println(fromServer); // sending the converted message back to the Client via ServerRouter
+						
+						//Space
+						System.out.println();
+					}	
 				}
+			} catch (SocketTimeoutException e){
+				System.err.println("Timeout, resend please...");
+				out.println("Timeout.");
 				
-				//operation, in this case turn to uppercase
-				fromServer = fromClient.toUpperCase(); // converting received message to upper case
-				
-				System.out.println("Server said: " + fromServer);
-				
-				out.println(fromServer); // sending the converted message back to the Client via ServerRouter
-				
-				//Space
-				System.out.println();
 			}
 	
 			// closing connections
@@ -300,7 +342,6 @@ public class TCPNode extends JFrame {
 
 	private class goServer implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			try {
 				//get data
 				routerName = routerServerIP.getText();
@@ -309,11 +350,11 @@ public class TCPNode extends JFrame {
 
 				//do server stuffs
 				//keeps running because whenever a single compute is finished, it will reconnect to ServerRouter
-				while(1==1){
+				while(true){
 					serverStuffs(routerName, address, sock);
 				}
+				
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
@@ -321,7 +362,6 @@ public class TCPNode extends JFrame {
 	
 	private class goClient implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
 			try {
 				//get data
 				routerName = routerServerIP.getText();
@@ -347,7 +387,6 @@ public class TCPNode extends JFrame {
 				}
 				
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
