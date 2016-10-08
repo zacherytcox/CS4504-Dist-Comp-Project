@@ -119,7 +119,6 @@ public class TCPNode extends JFrame {
 				return;
 			}
 	
-			
 			// read file
 			Reader reader = new FileReader(tempFile.toFile()); // create a file
 			System.out.println("Reading File...");												
@@ -171,17 +170,18 @@ public class TCPNode extends JFrame {
 					//if receives "Bye." string, ends process
 					if (fromServer.toString().equals("Bye.")) { // exit statement
 						System.out.println("Bye.");		
+						t1 = System.currentTimeMillis();
 						out.println("Bye.");
 						out.println("Thread Bye.");
 						break;
 					}
 					
 					else if(fromServer.toString().equals("Timeout.")){
+						t1 = System.currentTimeMillis();
 						out.println(fromUser);
 					}
 						
 					else{
-	
 						//reads data from temp file
 						fromUser = fromFile.readLine(); // reading strings from a file
 					}
@@ -395,15 +395,19 @@ public class TCPNode extends JFrame {
 	//This method creates a temp file containing the string inserted in the GUI
 	private static Path createTempFile(JTextField sendString) throws IOException{
 		
-		
 		Path tempFile = Files.createTempFile("TCPNode.", null);
+		
+		FileReader fr = new FileReader("");
+		BufferedReader br = new BufferedReader(fr);
+		
+		
+		
 		BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile.toFile()));
 		bw.write(sendString.getText());
 		bw.close();
 		System.out.println("Temp File Location: " + tempFile.toAbsolutePath());
 		return tempFile;
 		
-
 	}
 	
 	//This method deletes the temp file after we are done with it
@@ -423,7 +427,6 @@ public class TCPNode extends JFrame {
 			bw.close();
 		}catch(FileNotFoundException e){
 			System.err.println(e);
-			
 		}
 	}
 	
