@@ -47,6 +47,7 @@ public class TCPServerRouter {
             	System.out.println(Arrays.deepToString(RoutingTable));
             	//get the next available position within table
                 ind = getNextNullArrayPostion(RoutingTable);
+                int ind2 = doesIpExist(RoutingTable, nodeSocket.getInetAddress().getHostAddress());
                 
                 if(ind == -1){
                 	System.err.println("Routing Table is full!");
@@ -56,6 +57,11 @@ public class TCPServerRouter {
                 	break;
                 }
                 
+                //if the ip is already in the table, just send the same ip
+                if (ind2 != -1){
+                	ind = ind2;
+                }
+
                 
                 //creates a new thread
                 SThread t = new SThread(RoutingTable, nodeSocket, ind); // creates a thread with a random port
@@ -74,11 +80,25 @@ public class TCPServerRouter {
             }
             
         }//end while
+
         
         //closing connections
         nodeSocket.close();
         serverSocket.close();
 
+    }
+    
+    //if ip already exists within table
+    private static int doesIpExist(Object [][] table, String ip){
+    	
+    	for(int i = 0; i<10; i++){
+    		if(table[i][0] == ip){
+    			return i;
+    		}
+    	}
+    	
+    	return -1;
+    	
     }
     
 

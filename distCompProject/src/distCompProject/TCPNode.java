@@ -396,12 +396,6 @@ public class TCPNode extends JFrame {
 	private static Path createTempFile(JTextField sendString) throws IOException{
 		
 		Path tempFile = Files.createTempFile("TCPNode.", null);
-		
-		FileReader fr = new FileReader("");
-		BufferedReader br = new BufferedReader(fr);
-		
-		
-		
 		BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile.toFile()));
 		bw.write(sendString.getText());
 		bw.close();
