@@ -1,7 +1,18 @@
 package distCompProject;
 
 //Author: Zachery Cox
-//Date: 10/6/16
+//Date: 10/11/16
+
+/*//////////////////////////////// INSTRUCTIONS ////////////////////////////////////////
+NOTE:
+Server Node MUST connect to server router first. Error otherwise.
+
+Just run script to allow this node to be ran as a server router.
+It will operate on port 5555.
+No GUI, since user interaction will be minimal
+
+
+//////////////////////////////////////////////////////////////////////////////////*/
 
 
 import java.net.*;
@@ -44,7 +55,7 @@ public class TCPServerRouter {
                 	return;
                 }
             	
-            	System.out.println(Arrays.deepToString(RoutingTable));
+            	//System.out.println(Arrays.deepToString(RoutingTable));
             	//get the next available position within table
                 ind = getNextNullArrayPostion(RoutingTable);
                 int ind2 = doesIpExist(RoutingTable, nodeSocket.getInetAddress().getHostAddress());

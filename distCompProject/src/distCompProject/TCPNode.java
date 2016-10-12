@@ -1,7 +1,28 @@
 package distCompProject;
 
 //Author: Zachery Cox
-//Date: 10/6/16
+//Date: 10/11/16
+
+
+/*//////////////////////////////// INSTRUCTIONS ////////////////////////////////////////
+NOTE:
+Server Node MUST connect to server router first. Error otherwise.
+
+CLIENT:
+Launch TCPNode, fill in fields accordingly
+Click "Run as Client" to run client code and it will send string to server router to send to destination node.
+When process is finished, the GUI will then be responsive and will be allowed to send another string.
+
+
+SERVER:
+Launch TCPNode, fill in fields accordingly
+Click "Run as Server" to run server code and receive data to compute
+Server code will continue to run even when connection is finished. It will reconnect after processing a request.
+This will allow the user, implementing this software, to just have to operate the client node.
+
+//////////////////////////////////////////////////////////////////////////////////*/
+
+
 
 
 import java.io.*;
@@ -205,7 +226,7 @@ public class TCPNode extends JFrame {
 						System.out.println("Client: " + fromUser);
 						
 						//send log data to log file
-						addToLogFile(fromUser.toString(), t, fileSize, logPath);
+						//addToLogFile(fromUser.toString(), t, fileSize, logPath);
 						
 						
 						out.println(fromUser); // sending the strings to the Server via ServerRouter

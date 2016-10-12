@@ -1,7 +1,9 @@
 package distCompProject;
 
 //Author: Zachery Cox
-//Date: 10/6/16
+//Date: 10/11/16
+
+//This code is ran within TCPServerRouter.java
 
 
 import java.io.*;
@@ -38,7 +40,7 @@ public class SThread extends Thread {
 			if (ip.equals((String) table[i][0])){
 				table[i][0] = null;
 				table[i][1] = null;
-				System.out.println("Removed " + ip + " from Routing Table...");
+				System.out.println("Removed " + ip + " from Routing Table...\n");
 			}
 		}
     	   	
@@ -93,20 +95,21 @@ public class SThread extends Thread {
 				for ( int i=0; i<10; i++){
 					if (destination.equals((String) RTable[i][0])){
 						outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
-						System.out.println("Found destination: " + destination);
+						System.out.println("Found destination: " + destination + "\n");
 						outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
 					}
 				}
 				
-				rtl1 = rtl0 = System.currentTimeMillis();
+				rtl1 = System.currentTimeMillis();
 				rtlt = rtl0 - rtl1;
-				System.out.println(rtlt);
+				//Prints out Routing Table lookup time
+				//System.out.println(rtlt);
 				
-				System.out.println("Node " + addr + " said: " + inputLine);
+				System.out.println("Node " + addr + " said: " + inputLine + "\n");
 				
 				//If "Thread Bye." gets sent, the thread will end
 				if (inputLine.toString().equals("Thread Bye.")){ // exit statement
-					System.out.println("Thread Terminated for: " + addr);
+					System.out.println("Thread Terminated for: " + addr + "\n");
 					removeTableEntry(RTable, addr, ind);
 					break;
 				}
