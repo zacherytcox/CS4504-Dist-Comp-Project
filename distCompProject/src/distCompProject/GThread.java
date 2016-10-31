@@ -11,7 +11,7 @@ import java.net.*;
 import java.lang.Exception;
 
 	
-public class SThread extends Thread {
+public class GThread extends Thread {
 	private Object [][] RTable; // routing table
 	private PrintWriter out, outTo; // writers (for writing back to the machine and to destination)
 	private BufferedReader in; // reader (for reading from the machine connected to)
@@ -22,7 +22,7 @@ public class SThread extends Thread {
 	private MulticastSocket multiSocket;
 
 	// Constructor
-	SThread(Object [][] Table, Socket toClient, int index, MulticastSocket toGroup) throws IOException{
+	GThread(MulticastSocket toGroup, Object [][] Table) throws IOException{
 		
 		toClient.setSoTimeout(timeout);
         out = new PrintWriter(toClient.getOutputStream(), true);

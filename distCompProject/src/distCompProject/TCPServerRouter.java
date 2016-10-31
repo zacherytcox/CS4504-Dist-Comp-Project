@@ -16,7 +16,6 @@ No GUI, since user interaction will be minimal
 
 
 import java.net.*;
-import java.util.Arrays;
 import java.io.*;
 
 public class TCPServerRouter {
@@ -28,6 +27,11 @@ public class TCPServerRouter {
         int SockNum = 5555; // port number
         Boolean Running = true;
         int ind; // indext in the routing table	
+        
+        //Multicast Stuff
+        InetAddress group = InetAddress.getByName("239.6.6.5");
+        MulticastSocket mulSocket = new MulticastSocket(4504);
+        mulSocket.joinGroup(group);
         
 
         //Accepting connections
@@ -42,13 +46,13 @@ public class TCPServerRouter {
             System.exit(1);
         }
 
-        
+        GThread g = new GThread(mulSocket, RoutingTable);
         // Creating threads with accepted connections
         while (Running == true){
             try {
             	//create a block for a request from a node
             	try{
-            		nodeSocket = serverSocket.accept();
+            		nodeSocket = serverSocket.accept(); 
             	}
                 catch(SocketTimeoutException e){
                 	System.err.println("Socket Timeout! 60 Seconds!");
@@ -75,7 +79,7 @@ public class TCPServerRouter {
 
                 
                 //creates a new thread
-                SThread t = new SThread(RoutingTable, nodeSocket, ind); // creates a thread with a random port
+                SThread t = new SThread(RoutingTable, nodeSocket, ind, mulSocket); // creates a thread with a random port
                 
                 //executes the run method within the SThread object
                 t.start(); // starts the thread
@@ -96,6 +100,7 @@ public class TCPServerRouter {
         //closing connections
         nodeSocket.close();
         serverSocket.close();
+        mulSocket.close();
 
     }
     
