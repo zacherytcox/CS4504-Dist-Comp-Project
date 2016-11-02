@@ -180,6 +180,27 @@ public class TCPNode extends JFrame {
 			
 			//Start timer for Cycle Time
 			t0 = System.currentTimeMillis();
+			
+			
+			
+			out.println("Test String");
+			
+			
+			
+			
+			//NEED TO HAVE SOME CHECK IF THERE IS NO MATCH
+			try{
+				fromServer = in.readLine();// initial receive from router (verification of connection)
+			
+			} catch (SocketTimeoutException e){
+				System.err.println("Timeout!");
+				// closing connections
+				fromFile.close();
+				out.close();
+				in.close();
+				Socket.close();
+				return;
+			}
 	
 			// Communication while loop
 			try{

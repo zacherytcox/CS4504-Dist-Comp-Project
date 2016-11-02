@@ -21,9 +21,11 @@ public class GThread extends Thread {
 	private MulticastSocket multiSocket;
 	private String packetString;
 	private String toAddress, fromAddress;
+	Object [][] RTable = TCPServerRouter.RoutingTable;
 
 	// Constructor
-	GThread(MulticastSocket toGroup, Object [][] RTable, Socket nodeSocket) throws IOException{
+	GThread(MulticastSocket toGroup, Socket nodeSocket) throws IOException{
+		
 		
 		nodeSocket.setSoTimeout(timeout);
         out = new PrintWriter(nodeSocket.getOutputStream(), true);
@@ -85,7 +87,7 @@ public class GThread extends Thread {
 	    		
 				// loops through the routing table to find the destination in the route table
 				for ( int i=0; i<10; i++){
-					if (RTable[i][0]).equals(toAddress)){
+					if ((RTable[i][0]).equals(toAddress)){
 						//SEND BY TCP TO THE NODE ON THIS SERVER ROUTER
 						out.println(packetString);
 						//BOMB OUT AFTER

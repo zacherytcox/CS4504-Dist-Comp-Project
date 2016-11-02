@@ -20,6 +20,7 @@ public class SThread extends Thread {
 	private int ind; // indext in the routing table
 	private static int timeout = 60000;
 	private MulticastSocket multiSocket;
+	private String toAddress, fromAddress, packetString;
 
 	// Constructor
 	SThread(Object [][] Table, Socket toClient, int index, MulticastSocket toGroup) throws IOException{
@@ -86,9 +87,23 @@ public class SThread extends Thread {
     		//lookup table variable times
     		long rtl0, rtl1, rtlt;
             
+    		
+    		byte[] buf = new byte[1000];
+    		DatagramPacket recv = new DatagramPacket(buf, buf.length);
+    		
             
 			// Communication loop	
 			while ((inputLine = in.readLine()) != null) {
+				
+				
+				multiSocket.receive(recv);
+				packetString = recv.toString();
+				
+				//NEED PARSE STUFF!!!
+				//parse through packetstring for ip address
+				toAddress = "THIS NEEDS TO BE DEST ADDR";
+				fromAddress = "THIS NEEDS TO BE SOURCE ADDR";
+				
 				
 	    		
 	    		//get initial time
