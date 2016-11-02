@@ -20,10 +20,11 @@ import java.io.*;
 
 public class TCPServerRouter {
 	private static int timeout = 0;
+    public static Object [][] RoutingTable = new Object [10][2]; // routing table
 	
     public static void main(String[] args) throws IOException {
         Socket nodeSocket = null; // socket for the thread
-        Object [][] RoutingTable = new Object [10][2]; // routing table
+
         int SockNum = 5555; // port number
         Boolean Running = true;
         int ind; // indext in the routing table	
@@ -47,6 +48,7 @@ public class TCPServerRouter {
         }
 
         GThread g = new GThread(mulSocket, RoutingTable, nodeSocket);
+        g.run();
         // Creating threads with accepted connections
         while (Running == true){
             try {

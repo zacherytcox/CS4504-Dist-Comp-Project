@@ -74,7 +74,7 @@ public class GThread extends Thread {
 				multiSocket.receive(recv);
 				packetString = recv.toString();
 				
-				
+				//NEED PARSE STUFF!!!
 				//parse through packetstring for ip address
 				toAddress = "THIS NEEDS TO BE DEST ADDR";
 				fromAddress = "THIS NEEDS TO BE SOURCE ADDR";
