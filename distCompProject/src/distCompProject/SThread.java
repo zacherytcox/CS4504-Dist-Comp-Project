@@ -33,6 +33,7 @@ public class SThread extends Thread {
         RTable[index][1] = toClient; // sockets for communication
         ind = index;
         multiSocket = toGroup;
+        
 	}
 	
     private static void removeTableEntry(Object [][] table, String ip, int ind){    	

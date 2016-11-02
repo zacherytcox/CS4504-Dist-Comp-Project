@@ -12,7 +12,6 @@ import java.lang.Exception;
 
 	
 public class GThread extends Thread {
-	private Object [][] RTable; // routing table
 	private PrintWriter out, outTo; // writers (for writing back to the machine and to destination)
 	private BufferedReader in; // reader (for reading from the machine connected to)
 	private String inputLine, outputLine, destination, addr; // communication strings
@@ -20,18 +19,16 @@ public class GThread extends Thread {
 	private int ind; // indext in the routing table
 	private static int timeout = 60000;
 	private MulticastSocket multiSocket;
+	private String packetString;
+	private String toAddress, fromAddress;
 
 	// Constructor
-	GThread(MulticastSocket toGroup, Object [][] Table) throws IOException{
+	GThread(MulticastSocket toGroup, Object [][] RTable, Socket nodeSocket) throws IOException{
 		
-		toClient.setSoTimeout(timeout);
-        out = new PrintWriter(toClient.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(toClient.getInputStream()));
-        RTable = Table;
-        addr = toClient.getInetAddress().getHostAddress();
-        RTable[index][0] = addr; // IP addresses 
-        RTable[index][1] = toClient; // sockets for communication
-        ind = index;
+		nodeSocket.setSoTimeout(timeout);
+        out = new PrintWriter(nodeSocket.getOutputStream(), true);
+        in = new BufferedReader(new InputStreamReader(nodeSocket.getInputStream()));
+        addr = nodeSocket.getInetAddress().getHostAddress();
         multiSocket = toGroup;
 	}
 	
@@ -54,18 +51,8 @@ public class GThread extends Thread {
 		try{
 			
 
-			// Initial sends/receives
-			try{
-				destination = in.readLine(); // initial read (the destination for writing)
-			}catch (SocketTimeoutException e) {
-				System.err.println(e);
-				out.println("Timeout.");
-				
-			}
-			System.out.println(addr + " Wants to forward to " + destination);
-			out.println("Connected to the router."); // confirmation of connection
-			
-		
+
+
 			// waits 10 seconds to let the routing table fill with all machines' information
 			try{
 				Thread.currentThread().sleep(10000); 
@@ -73,21 +60,24 @@ public class GThread extends Thread {
 			catch(InterruptedException ie){
 				System.out.println("Thread interrupted");
 			}
-			
-
-			System.out.println(addr + " Thread Created...");
-            System.out.println();
-            System.out.println();
-			
-            
-    		
     		
     		//lookup table variable times
     		long rtl0, rtl1, rtlt;
             
+    		
+    		byte[] buf = new byte[1000];
+    		DatagramPacket recv = new DatagramPacket(buf, buf.length);
             
 			// Communication loop	
-			while ((inputLine = in.readLine()) != null) {
+			while (1==1) { //inputLine
+				
+				multiSocket.receive(recv);
+				packetString = recv.toString();
+				
+				
+				//parse through packetstring for ip address
+				toAddress = "THIS NEEDS TO BE DEST ADDR";
+				fromAddress = "THIS NEEDS TO BE SOURCE ADDR";
 				
 	    		
 	    		//get initial time
@@ -95,35 +85,19 @@ public class GThread extends Thread {
 	    		
 				// loops through the routing table to find the destination in the route table
 				for ( int i=0; i<10; i++){
-					if (destination.equals((String) RTable[i][0])){
-						outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
-						System.out.println("Found destination: " + destination + "\n");
-						outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
+					if (RTable[i][0]).equals(toAddress)){
+						//SEND BY TCP TO THE NODE ON THIS SERVER ROUTER
+						out.println(packetString);
+						//BOMB OUT AFTER
 					}
 				}
 				
+					
 				rtl1 = System.currentTimeMillis();
 				rtlt = rtl0 - rtl1;
 				//Prints out Routing Table lookup time
 				//System.out.println(rtlt);
-				
-				System.out.println("Node " + addr + " said: " + inputLine + "\n");
-				
-				//If "Thread Bye." gets sent, the thread will end
-				if (inputLine.toString().equals("Thread Bye.")){ // exit statement
-					System.out.println("Thread Terminated for: " + addr + "\n");
-					removeTableEntry(RTable, addr, ind);
-					break;
-				}
-				
-				
-				outputLine = inputLine; // passes the input from the machine to the output string for the destination
-				
-				// if the socket is not null and actually has a port, it will send out the response from outputLine
-				if ( outSocket != null){				
-					outTo.println(outputLine); // writes to the destination
-					System.out.println("");
-				}		
+					
 				
 			}// end while	
 			

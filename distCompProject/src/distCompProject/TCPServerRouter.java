@@ -46,7 +46,7 @@ public class TCPServerRouter {
             System.exit(1);
         }
 
-        GThread g = new GThread(mulSocket, RoutingTable);
+        GThread g = new GThread(mulSocket, RoutingTable, nodeSocket);
         // Creating threads with accepted connections
         while (Running == true){
             try {
