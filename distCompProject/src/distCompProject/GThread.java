@@ -72,6 +72,7 @@ public class GThread extends Thread {
             
 			// Communication loop	
 			while (1==1) { //inputLine
+				RTable = TCPServerRouter.RoutingTable;
 				
 				multiSocket.receive(recv);
 				packetString = recv.toString();
