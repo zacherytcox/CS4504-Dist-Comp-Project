@@ -21,6 +21,8 @@ public class SThread extends Thread {
 	private static int timeout = 60000;
 	private MulticastSocket multiSocket;
 	private String toAddress, fromAddress, packetString;
+	private String delims = "[ ]+";
+	private String [] packetParts;
 
 	// Constructor
 	SThread(Object [][] Table, Socket toClient, int index, MulticastSocket toGroup) throws IOException{
@@ -94,18 +96,11 @@ public class SThread extends Thread {
             
 			// Communication loop	
 			while ((inputLine = in.readLine()) != null) {
+
+				packetParts = inputLine.split(delims);
 				
+				destination = packetParts[0];
 				
-				multiSocket.receive(recv);
-				packetString = recv.toString();
-				
-				//NEED PARSE STUFF!!!
-				//parse through packetstring for ip address
-				toAddress = "THIS NEEDS TO BE DEST ADDR";
-				fromAddress = "THIS NEEDS TO BE SOURCE ADDR";
-				
-				
-	    		
 	    		//get initial time
 	    		rtl0 = System.currentTimeMillis();
 	    		
@@ -115,7 +110,9 @@ public class SThread extends Thread {
 						outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
 						System.out.println("Found destination: " + destination + "\n");
 						outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
+						break;
 					}
+					/////SEND THE BROADCAST!!
 				}
 				
 				rtl1 = System.currentTimeMillis();
@@ -139,7 +136,8 @@ public class SThread extends Thread {
 				if ( outSocket != null){				
 					outTo.println(outputLine); // writes to the destination
 					System.out.println("");
-				}		
+				}	
+				break; //DONE WITH HANDLING THE PACKET
 				
 			}// end while	
 			

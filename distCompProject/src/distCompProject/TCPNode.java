@@ -176,35 +176,16 @@ public class TCPNode extends JFrame {
 			}
 			
 			System.out.println("ServerRouter: " + fromServer);
-			out.println(host); // Client sends the IP of its machine as initial send
 			
 			//Start timer for Cycle Time
 			t0 = System.currentTimeMillis();
 			
+			out.println("7 IM 5"); //// 7 IM 5
 			
-			
-			out.println("Test String");
-			
-			
-			
-			
-			//NEED TO HAVE SOME CHECK IF THERE IS NO MATCH
-			try{
-				fromServer = in.readLine();// initial receive from router (verification of connection)
-			
-			} catch (SocketTimeoutException e){
-				System.err.println("Timeout!");
-				// closing connections
-				fromFile.close();
-				out.close();
-				in.close();
-				Socket.close();
-				return;
-			}
 	
 			// Communication while loop
 			try{
-				while ((fromServer = in.readLine()) != null) {
+				while ((fromServer = in.readLine()) != null) { // GETS "5 IM 7"
 					System.out.println("Server: " + fromServer);
 					System.out.println();
 					t1 = System.currentTimeMillis();
@@ -249,8 +230,14 @@ public class TCPNode extends JFrame {
 						//send log data to log file
 						//addToLogFile(fromUser.toString(), t, fileSize, logPath);
 						
+						/////GET DEST IP FROM PACKET SENT!!!
 						
-						out.println(fromUser); // sending the strings to the Server via ServerRouter
+						///// NEED TO SEND TO DEST NODE NOT SERVER ROUTER!!!
+						///// SETUP COMMUNICATION TO 7
+						
+						out.println(fromUser);
+						
+						///// MORE LOGIC!!! COMMUNICATION BETWEEN THE TWO NODES!!!!
 						
 						
 						t0 = System.currentTimeMillis();
@@ -333,6 +320,16 @@ public class TCPNode extends JFrame {
 			System.out.println("ServerRouter: " + fromClient);
 	
 			try{
+				
+				
+				/////GETS 7 IM 5
+				
+				/////SENDS 5 IM 7
+				
+				/////CHANGE SOCKET TO NEW IP ADDRESS (5) AND WAIT. SAME-ISH LOGIC
+				
+				
+				
 				// Communication while loop
 				while ((fromClient = in.readLine()) != null) {
 					System.out.println("Client said: " + fromClient);
