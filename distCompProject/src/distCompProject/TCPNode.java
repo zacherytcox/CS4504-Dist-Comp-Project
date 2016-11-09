@@ -1,6 +1,6 @@
 package distCompProject;
 
-//Author: Zachery Cox
+//Author: Zachery Cox / Andrew Marks
 //Date: 10/11/16
 
 
@@ -122,7 +122,7 @@ public class TCPNode extends JFrame {
 			Socket Socket = null; // socket to connect with ServerRouter
 			PrintWriter out = null; // for writing to ServerRouter
 			BufferedReader in = null; // for reading form ServerRouter
-			InetAddr,ess addr = InetAddress.getLocalHost();
+			InetAddress addr = InetAddress.getLocalHost();
 			String host = addr.getHostAddress(); // Client machine's IP
 			int SockNum = Integer.parseInt(sock); // port number
 	
@@ -234,7 +234,7 @@ public class TCPNode extends JFrame {
 						/////GET DEST IP FROM PACKET SENT!!!
 						
 
-						///// NEED TO SEND TO DEST NODE NOT SERVER ROUTER!!!
+
 						///// SETUP COMMUNICATION TO 7
 						
 						out.println(fromUser);
@@ -280,6 +280,7 @@ public class TCPNode extends JFrame {
 			BufferedReader in = null; // for reading from ServerRouter
 			//InetAddress addr = InetAddress.getLocalHost();
 			//String host = addr.getHostAddress(); // Server machine's IP
+			String clientIP; // for client ip
 			int SockNum = Integer.parseInt(sock); // port number
 	
 			// Tries to connect to the ServerRouter
@@ -321,19 +322,37 @@ public class TCPNode extends JFrame {
 			}
 			System.out.println("ServerRouter: " + fromClient);
 	
-			try{
+					
+				// /////GETS 7 IM 5
 				
-				
-				/////GETS 7 IM 5
-				
-				out.println("5 IM 7")
-				/////SENDS 5 IM 7
+				// out.println("5 IM 7")
+				// /////SENDS 5 IM 7
 				
 
-				/////CHANGE SOCKET TO NEW IP ADDRESS (5) AND WAIT. SAME-ISH LOGIC
-			//	Socket = new Socket(clientName, SockNum); 
-				
-				
+
+			// closing connections
+			System.out.println("Closing Sockets...");	
+			out.close();
+			in.close();
+			Socket.close();
+
+			
+
+	/////CHANGE SOCKET TO NEW IP ADDRESS (5) AND WAIT. SAME-ISH LOGIC
+	//Try to connect to client
+			try {
+				System.out.println("Connect to ServerRouter...");	
+				Socket = new Socket(fromClient, SockNum);
+				Socket.setSoTimeout(timeout);
+				out = new PrintWriter(Socket.getOutputStream(), true);
+				in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
+			} catch (IOException e) {
+				System.err.println("Server: Couldn't get I/O for the connection to: " + routerName);
+				return;
+			}
+			try{
+			 
+
 				// Communication while loop
 				while ((fromClient = in.readLine()) != null) {
 					System.out.println("Client said: " + fromClient);
@@ -365,22 +384,27 @@ public class TCPNode extends JFrame {
 						System.out.println();
 					}	
 				}
-			} catch (SocketTimeoutException e){
+			}
+			 catch (SocketTimeoutException e){
 				System.err.println("Timeout, resend please...");
 				out.println("Timeout.");
 				
 			}
-	
+
 			// closing connections
 			System.out.println("Closing Sockets...");	
 			out.close();
 			in.close();
 			Socket.close();
-			
+
+
+
 		} catch(SocketException e){
 			System.out.println(e);
 			return;
 		}
+		
+
 	}
 
 	private class goServer implements ActionListener {
