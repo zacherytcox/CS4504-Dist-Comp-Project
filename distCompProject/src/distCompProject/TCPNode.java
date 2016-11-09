@@ -122,7 +122,7 @@ public class TCPNode extends JFrame {
 			Socket Socket = null; // socket to connect with ServerRouter
 			PrintWriter out = null; // for writing to ServerRouter
 			BufferedReader in = null; // for reading form ServerRouter
-			InetAddress addr = InetAddress.getLocalHost();
+			InetAddr,ess addr = InetAddress.getLocalHost();
 			String host = addr.getHostAddress(); // Client machine's IP
 			int SockNum = Integer.parseInt(sock); // port number
 	
@@ -230,8 +230,10 @@ public class TCPNode extends JFrame {
 						//send log data to log file
 						//addToLogFile(fromUser.toString(), t, fileSize, logPath);
 						
+
 						/////GET DEST IP FROM PACKET SENT!!!
 						
+
 						///// NEED TO SEND TO DEST NODE NOT SERVER ROUTER!!!
 						///// SETUP COMMUNICATION TO 7
 						
@@ -324,10 +326,12 @@ public class TCPNode extends JFrame {
 				
 				/////GETS 7 IM 5
 				
+				out.println("5 IM 7")
 				/////SENDS 5 IM 7
 				
+
 				/////CHANGE SOCKET TO NEW IP ADDRESS (5) AND WAIT. SAME-ISH LOGIC
-				
+			//	Socket = new Socket(clientName, SockNum); 
 				
 				
 				// Communication while loop
