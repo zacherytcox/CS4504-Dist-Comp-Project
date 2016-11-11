@@ -124,7 +124,7 @@ public class TCPNode extends JFrame {
 			BufferedReader in = null; // for reading form ServerRouter
 			InetAddress addr = InetAddress.getLocalHost();
 			String host = addr.getHostAddress(); // Client machine's IP
-			int SockNum = Integer.parseInt(sock); // port number
+			int SockNum = Integer.parseInt(sock); // port number 
 	
 			// Tries to connect to the ServerRouter
 			try {
@@ -183,6 +183,30 @@ public class TCPNode extends JFrame {
 			out.println("7 IM 5"); //// 7 IM 5
 			
 	
+
+	
+			System.out.println("Closing Sockets...");
+
+			// closing connections
+			fromFile.close();
+			out.close();
+			in.close();
+			Socket.close();
+			
+
+//////////////////////////////////////////////////////////////
+////CHANGE SOCKET TO NEW IP ADDRESS (5) AND WAIT.
+			 try {
+				System.out.println("Connect to ServerRouter...");	
+				Socket = new Socket(address, SockNum);
+				Socket.setSoTimeout(timeout);
+				out = new PrintWriter(Socket.getOutputStream(), true);
+				in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
+			} catch (IOException e) {
+				System.err.println("Server: Couldn't get I/O for the connection to: " + routerName);
+				return;
+			}
+
 			// Communication while loop
 			try{
 				while ((fromServer = in.readLine()) != null) { // GETS "5 IM 7"
@@ -231,7 +255,9 @@ public class TCPNode extends JFrame {
 						//addToLogFile(fromUser.toString(), t, fileSize, logPath);
 						
 
-						/////GET DEST IP FROM PACKET SENT!!!
+
+
+						/////GET DEST IP FROM PACKET SENT!!! (or from the user input[address])
 						
 
 
@@ -256,8 +282,8 @@ public class TCPNode extends JFrame {
 			}catch (SocketTimeoutException e){
 				System.err.println(e);
 			}
-	
-			System.out.println("Closing Sockets...");
+
+
 
 			// closing connections
 			fromFile.close();
@@ -265,9 +291,10 @@ public class TCPNode extends JFrame {
 			in.close();
 			Socket.close();
 			return;
-		
+
+////////////////////////////////////////////////////////////////
 		} catch(SocketException e){
-			System.out.println(e);
+		System.out.println(e);
 			return;
 		}
 	}
@@ -280,7 +307,6 @@ public class TCPNode extends JFrame {
 			BufferedReader in = null; // for reading from ServerRouter
 			//InetAddress addr = InetAddress.getLocalHost();
 			//String host = addr.getHostAddress(); // Server machine's IP
-			String clientIP; // for client ip
 			int SockNum = Integer.parseInt(sock); // port number
 	
 			// Tries to connect to the ServerRouter
