@@ -283,50 +283,31 @@ public class TCPNode extends JFrame {
 			}
 			System.out.println("ServerRouter: " + fromClient);
 	
-					
-				// /////GETS 7 IM 5
-				
-				// out.println("5 IM 7")
-				// /////SENDS 5 IM 7
-				
 
+			try{
 
-			// closing connections
-			System.out.println("Closing Sockets...");	
-			out.close();
-			in.close();
-			Socket.close();
+				fromClient = in.readLine();// waiting on client to handshake
 
-			
-
-	/////CHANGE SOCKET TO NEW IP ADDRESS (5) AND WAIT. SAME-ISH LOGIC
-	//Try to connect to client
-			try {
-				System.out.println("Connect to ServerRouter...");	
-				Socket = new Socket(fromClient, SockNum);
-				Socket.setSoTimeout(timeout);
-				out = new PrintWriter(Socket.getOutputStream(), true);
-				in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
-			} catch (IOException e) {
-				System.err.println("Server: Couldn't get I/O for the connection to: " + routerName);
+			}catch(SocketTimeoutException e){
+				System.err.println("Waiting on client, timeout");
+				Socket.close();
 				return;
 			}
+			System.out.println("ServerRouter: " + fromClient);
+			
+			out.println("ok");
+			
+			
+			
+			//change the ports to the client
+			
 			try{
-			 
-
 				// Communication while loop
 				while ((fromClient = in.readLine()) != null) {
 					System.out.println("Client said: " + fromClient);
+
 					
-					//if receives "Bye.", it will end client and thread
-					if (fromClient.toString().equals("Bye.")) { // exit statement
-						System.out.println("Bye.");
-						out.println("Bye.");
-						out.println("Thread Bye.");
-						break;
-					}
-					
-					else if (fromClient.toString().equals("Timeout.")){
+					if (fromClient.toString().equals("Timeout.")){
 						out.println(fromServer);
 						System.err.println("Timeout! Resend!");
 						
@@ -345,27 +326,22 @@ public class TCPNode extends JFrame {
 						System.out.println();
 					}	
 				}
-			}
-			 catch (SocketTimeoutException e){
+			} catch (SocketTimeoutException e){
 				System.err.println("Timeout, resend please...");
 				out.println("Timeout.");
 				
 			}
-
+	
 			// closing connections
 			System.out.println("Closing Sockets...");	
 			out.close();
 			in.close();
 			Socket.close();
-
-
-
+			
 		} catch(SocketException e){
 			System.out.println(e);
 			return;
 		}
-		
-
 	}
 
 	private class goServer implements ActionListener {
