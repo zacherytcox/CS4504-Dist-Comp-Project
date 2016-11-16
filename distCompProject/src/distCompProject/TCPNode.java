@@ -82,16 +82,16 @@ public class TCPNode extends JFrame {
 		frame.add(new Label("Operate as ClientNode"));
 		frame.add(new Label("Operate as ServerNode"));
 
-		routerServerIP.setText("192.168.56.102");
+		routerServerIP.setText("192.168.1.2");
 		frame.add(routerServerIP);
 		
-		destIP.setText("192.168.56.103");
+		destIP.setText("192.168.1.2");
 		frame.add(destIP);
 		
-		routerServerSock.setText("5555");
+		routerServerSock.setText("5001");
 		frame.add(routerServerSock);
 		
-		mySock.setText("5555");
+		mySock.setText("1001");
 		frame.add(mySock);
 		
 		sendString.setText("string");
@@ -149,9 +149,7 @@ public class TCPNode extends JFrame {
 																	// string file
 			String fromServer = null; // messages received from ServerRouter
 			String fromUser = null; // messages sent to ServerRouter
-			
-			//Cycle Time variables
-			long t0, t1, t;
+
 	
 			// Communication process (initial sends/receives
 					
@@ -177,25 +175,26 @@ public class TCPNode extends JFrame {
 			
 			System.out.println("ServerRouter: " + fromServer);
 			
-			//Start timer for Cycle Time
-			t0 = System.currentTimeMillis();
-			
 			out.println("7 IM 5"); //// 7 IM 5
 			
-	
-
-	
-			System.out.println("Closing Sockets...");
-
-			// closing connections
-			fromFile.close();
-			out.close();
-			in.close();
-			Socket.close();
+			
+			try{
+				fromServer = in.readLine();
+				System.out.println(fromServer + " from server, connected");
+				
+			} catch(SocketTimeoutException e) {
+				System.err.println("Timeout!");
+				// closing connections
+				fromFile.close();
+				out.close();
+				in.close();
+				Socket.close();
+				return;
+			}
 			
 
-//////////////////////////////////////////////////////////////
-////CHANGE SOCKET TO NEW IP ADDRESS (5) AND WAIT.
+			//send to new node
+			//new sockets for server node
 			 try {
 				System.out.println("Connect to ServerRouter...");	
 				Socket = new Socket(address, SockNum);
@@ -207,83 +206,19 @@ public class TCPNode extends JFrame {
 				return;
 			}
 
-			// Communication while loop
-			try{
-				while ((fromServer = in.readLine()) != null) { // GETS "5 IM 7"
-					System.out.println("Server: " + fromServer);
-					System.out.println();
-					t1 = System.currentTimeMillis();
+			 
+			//reads data from temp file
+			fromUser = fromFile.readLine(); // reading strings from a file
 		
-					//if receives "Bye." string, ends process
-					if (fromServer.toString().equals("Bye.")) { // exit statement
-						System.out.println("Bye.");		
-						t1 = System.currentTimeMillis();
-						out.println("Bye.");
-						out.println("Thread Bye.");
-						break;
-					}
-					
-					else if(fromServer.toString().equals("Timeout.")){
-						t1 = System.currentTimeMillis();
-						out.println(fromUser);
-					}
-						
-					else{
-						//reads data from temp file
-						fromUser = fromFile.readLine(); // reading strings from a file
-					}
-					
-					//if the file is not null
-					if (fromUser != null) {
-						
-						//get Cycle Time
-						t = t1 - t0;
-						
-						//print Cycle Time
-						System.out.println("Cycle time: " + t);
-						
-						//get the size of the file
-						long fileSize = tempFile.toFile().length();
-						
-						//print file size
-						System.out.println("String Size: " + fileSize);
-						
-					
-						System.out.println("Client: " + fromUser);
-						
-						//send log data to log file
-						//addToLogFile(fromUser.toString(), t, fileSize, logPath);
-						
-
-
-
-						/////GET DEST IP FROM PACKET SENT!!! (or from the user input[address])
-						
-
-
-						///// SETUP COMMUNICATION TO 7
-						
-						out.println(fromUser);
-						
-						///// MORE LOGIC!!! COMMUNICATION BETWEEN THE TWO NODES!!!!
-						
-						
-						t0 = System.currentTimeMillis();
-						
-					}
-					
-					//else we are done and we say bye to serverNode and thread
-					else{
-						out.println("Bye.");
-						out.println("Thread Bye.");
-					}
-	
+			//if the file is not null
+			if (fromUser != null) {
+			//get the size of the file	
 				}
-			}catch (SocketTimeoutException e){
-				System.err.println(e);
-			}
 
-
+			 
+			//this is the results
+			fromServer = in.readLine();
+			
 
 			// closing connections
 			fromFile.close();

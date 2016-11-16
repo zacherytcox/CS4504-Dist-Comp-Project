@@ -12,7 +12,7 @@ import java.lang.Exception;
 
 	
 public class GThread extends Thread {
-	private PrintWriter outTo; // writers (for writing back to the machine and to destination)
+	private PrintWriter out; // writers (for writing back to the machine and to destination)
 	private Socket outSocket; // socket for communicating with a destination
 	private static int timeout = 60000;
 	private MulticastSocket multiSocket;
@@ -22,10 +22,11 @@ public class GThread extends Thread {
 	private String delims = "[ ]+";
 	private String [] packetParts;
 
+
 	// Constructor
 	GThread(MulticastSocket toGroup, Socket nodeSocket) throws IOException{
-		
-		
+
+        out = new PrintWriter(nodeSocket.getOutputStream(), true);
 		nodeSocket.setSoTimeout(timeout);
         multiSocket = toGroup;
 	}
@@ -72,8 +73,7 @@ public class GThread extends Thread {
 				for ( int i=0; i<10; i++){
 					if ((RTable[i][0]).equals(toAddress)){
 						//SEND BY TCP TO THE NODE ON THIS SERVER ROUTER
-						outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
-						outTo.println(packetString);
+						out.println(packetString);
 						//BOMB OUT AFTER
 						break;
 					}
