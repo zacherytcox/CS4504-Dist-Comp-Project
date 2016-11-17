@@ -25,7 +25,7 @@ public class SThread extends Thread {
 	private String [] packetParts;
 
 	// Constructor
-	SThread(Object [][] Table, Socket toClient, int index, MulticastSocket toGroup) throws IOException{
+	SThread(Object [][] Table, Socket toClient, int index) throws IOException{
 		
 		toClient.setSoTimeout(timeout);
         out = new PrintWriter(toClient.getOutputStream(), true);
@@ -35,7 +35,6 @@ public class SThread extends Thread {
         RTable[index][0] = addr; // IP addresses 
         RTable[index][1] = toClient; // sockets for communication
         ind = index;
-        multiSocket = toGroup;
         
 	}
 	
@@ -79,20 +78,46 @@ public class SThread extends Thread {
 			}
 			
 
-			System.out.println(addr + " Thread Created...");
-            System.out.println();
-            System.out.println();
 			
-            
-    		
-    		
-    		//lookup table variable times
-    		long rtl0, rtl1, rtlt;
-            
-    		
-    		byte[] buf = new byte[1000];
-    		DatagramPacket recv = new DatagramPacket(buf, buf.length);
-    		
+			// waits 10 seconds to let the routing table fill with all machines' information
+			try{
+				Thread.currentThread().sleep(10000); 
+			}
+			catch(InterruptedException ie){
+				System.out.println("Thread interrupted");
+			}
+			
+			
+			
+			
+			// my client is trying to find a server...
+			try{
+				destination = in.readLine(); // initial read (the destination for writing)
+			}catch (SocketTimeoutException e) {
+				System.err.println(e);
+				out.println("Timeout.");				
+			}
+
+			
+			//Does this SR have the server?
+			
+			
+			//send to other server routers
+			
+			
+			//get response
+			
+			
+			out.println("response from server"); // confirmation of connection
+			
+		
+			
+
+			
+			
+			
+			
+
             
 			// Communication loop	
 			while ((inputLine = in.readLine()) != null) {
@@ -100,9 +125,7 @@ public class SThread extends Thread {
 				packetParts = inputLine.split(delims);
 				
 				destination = packetParts[0];
-				
-	    		//get initial time
-	    		rtl0 = System.currentTimeMillis();
+
 	    		
 				// loops through the routing table to find the destination in the route table
 				for ( int i=0; i<10; i++){
@@ -114,9 +137,7 @@ public class SThread extends Thread {
 					}
 					/////SEND THE BROADCAST!!
 				}
-				
-				rtl1 = System.currentTimeMillis();
-				rtlt = rtl0 - rtl1;
+
 				//Prints out Routing Table lookup time
 				//System.out.println(rtlt);
 				
