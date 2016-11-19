@@ -6,7 +6,7 @@ public class RunPhase2 {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int numSR = 3;
+		int numSR = 2;
 		int numPairs = 2;
 		String ip = "192.168.10.10";
 		String name;
@@ -14,11 +14,8 @@ public class RunPhase2 {
 		//Start SRs
 		for (int i=0;i<numSR;i++){
 			name = "SR-" + ((i + 1) +40000);
-			
-			// (#of server routers, specify socket #, ipaddress, );
-			NodeThread t = new NodeThread(name, "sr", 3, ((i + 1) +40000) , ip); // creates a thread with a random port
-			t.start();
-			System.out.println("");
+			TCPServerRouter sr = new TCPServerRouter(name, numSR, ((i + 1) +40000) , ip);
+			sr.start();
 		}
 		
 		

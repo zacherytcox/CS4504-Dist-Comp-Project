@@ -16,24 +16,71 @@ import java.net.*;
 import java.util.Arrays;
 import java.io.*;
 
-public class TCPServerRouter {
-	private static int timeout = 0;
-    public static Object [][] RoutingTable = new Object [100000][2]; // routing table
+public class TCPServerRouter extends Thread {
+	private int timeout = 0;
+    private Object [][] RoutingTable = new Object [10][2]; // routing table
+    private String name, ip;
+    private int numSR, sockNum;
+    
+    TCPServerRouter (String thisName, int thisNumSR, int thisSockNum, String thisIp){
+    	name = thisName;
+    	numSR = thisNumSR;
+    	sockNum = thisSockNum;
+    	ip = thisIp;
+    	
+    	
+    }
 	
     //string socket num, string ip address
-    public static void main(int numSR, int sockNum, String ip) throws IOException {
+    public static void main(String thisName, int numSR, int sockNum, String ip) throws IOException {
+    
+    }
+    
+    //if ip already exists within table
+    private static int doesIpExist(Object [][] table, String ip){
     	
+    	for(int i = 0; i<10; i++){
+    		if(table[i][0] == ip){
+    			return i;
+    		}
+    	}
     	
+    	return -1;
+    	
+    }
+    
+
+    private static int getNextNullArrayPostion(Object [][] table){
+    	for(int i = 0; i<10; i++){
+    		if(table[i][0] == null){
+    			return i;
+    		}
+    	}
+    	    	
+    	return -1;
+    }
+    
+    
+    public void run(){
+
     	//adding server routers to table
-    	for(int i=0;i<3;i++){
-			//System.out.println("mySock: " + sockNum + " option: " +(40000 + (i+1)));
-    		RoutingTable[i][0] = ip;
-    		RoutingTable[i][1] = 40000 + (i+1);
+    	for(int i=0;i<numSR;i++){
+			System.out.println(this.name + " option: " +(40000 + (i+1)));
+			System.out.println(name +  Arrays.deepToString(RoutingTable));
+			if (sockNum != (40000 + (i+1))){
+	    		RoutingTable[i][0] = ip;
+	    		RoutingTable[i][1] = 40000 + (i+1);
+	    		System.out.println(name + " Added " + (40000 + (i+1)) + Arrays.deepToString(RoutingTable));
+			}
+			else{
+				System.out.println(name + " nope");
+				System.out.println(name +  Arrays.deepToString(RoutingTable));
+			}
 
     	}
     	
 
-    	//System.out.print(Arrays.deepToString(RoutingTable));
+    	System.out.println(name +  Arrays.deepToString(RoutingTable));
         Socket nodeSocket = null; // socket for the thread
         
         
@@ -109,34 +156,15 @@ public class TCPServerRouter {
 
         
         //closing connections
-        nodeSocket.close();
-        serverSocket.close();
-    }
-    
-    //if ip already exists within table
-    private static int doesIpExist(Object [][] table, String ip){
+        try {
+			nodeSocket.close();
+			serverSocket.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
     	
-    	for(int i = 0; i<10; i++){
-    		if(table[i][0] == ip){
-    			return i;
-    		}
-    	}
-    	
-    	return -1;
     	
     }
-    
-
-    private static int getNextNullArrayPostion(Object [][] table){
-    	for(int i = 0; i<10; i++){
-    		if(table[i][0] == null){
-    			return i;
-    		}
-    	}
-    	    	
-    	return -1;
-    }
-    
-    
-    
 }

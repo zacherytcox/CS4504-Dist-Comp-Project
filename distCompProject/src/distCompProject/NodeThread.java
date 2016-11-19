@@ -18,12 +18,8 @@ public class NodeThread extends Thread {
 	public void run(){
 		
 		if (nodeType.equals("sr")){
-			try {
-				TCPServerRouter.main(numberOfSRs, socketNum, myIp);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			TCPServerRouter sr = new TCPServerRouter(name, numberOfSRs, socketNum, myIp);
+			sr.start();
 		}	
 		
 //		else if (nodeType.equals("server")){
