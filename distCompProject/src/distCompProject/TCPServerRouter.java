@@ -13,6 +13,7 @@ No GUI, since user interaction will be minimal
 
 
 import java.net.*;
+import java.util.Arrays;
 import java.io.*;
 
 public class TCPServerRouter {
@@ -20,10 +21,24 @@ public class TCPServerRouter {
     public static Object [][] RoutingTable = new Object [100000][2]; // routing table
 	
     //string socket num, string ip address
-    public static void main(String[] args) throws IOException {
-        Socket nodeSocket = null; // socket for the thread
+    public static void main(int numSR, int sockNum, String ip) throws IOException {
+    	
+    	
+    	//adding server routers to table
+    	for(int i=0;i<3;i++){
+			//System.out.println("mySock: " + sockNum + " option: " +(40000 + (i+1)));
+    		RoutingTable[i][0] = ip;
+    		RoutingTable[i][1] = 40000 + (i+1);
 
-        int SockNum = Integer.parseInt(args[1]); // port number
+    	}
+    	
+
+    	//System.out.print(Arrays.deepToString(RoutingTable));
+        Socket nodeSocket = null; // socket for the thread
+        
+        
+        
+        int SockNum = sockNum; // port number
         Boolean Running = true;
         int ind; // indext in the routing table	
 
@@ -32,10 +47,10 @@ public class TCPServerRouter {
         try {
             serverSocket = new ServerSocket(SockNum);
             serverSocket.setSoTimeout(timeout);
-            System.out.println("ServerRouter is Listening on port: 5555.");
+            System.out.println("ServerRouter is Listening on port: " + SockNum);
         }
         catch (IOException e) {
-            System.err.println("Could not listen on port: 5555.");
+            System.err.println("Could not listen on port: " + SockNum);
             System.exit(1);
         }
 
