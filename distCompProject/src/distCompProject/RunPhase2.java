@@ -15,7 +15,7 @@ public class RunPhase2 {
 		// TODO Auto-generated method stub
 		int numSR = 3;
 		int numPairs = 2;
-		String ip = "192.168.10.10";
+		String ip = "192.168.50.157";
 		String name;
 		File f = null;
 		
@@ -29,7 +29,7 @@ public class RunPhase2 {
 		addToLogFile(f, "Number of Server Routers: " + numSR);
 		addToLogFile(f, "Number of Node Pairs: " + numPairs);
 		addToLogFile(f, "Ip address: " + ip );
-		addToLogFile(f, "\n####################START####################\n");
+		addToLogFile(f, "\n####################START PHASE 2 SIMULATION####################\n");
 		
 		
 		//Start SRs
@@ -39,15 +39,15 @@ public class RunPhase2 {
 			sr.start();
 		}
 		
-//		//Start Servers
-//		for (int i=0;i<numPairs;i++){
-//			name = "S-" + ((i + 1) + 30000);
-//			//String routerName, String address, String sock
-//			TCPServer s = new TCPServer(name, numPairs, ((i + 1) + 30000) , ip);
-//			s.start();
-//		}
-//		
-//		
+		//Start Servers
+		for (int i=0;i<numPairs;i++){
+			name = "S-" + ((i + 1) + 30000);
+			//String routerName, String address, String sock
+			TCPServer s = new TCPServer(name, ip, ((i + 1) + 30000) , numSR, f);
+			s.start();
+		}
+		
+		
 //		//Start Clients
 //		for (int i=0;i<numPairs;i++){
 //			name = "C-" + ((i + 1) + 20000);
