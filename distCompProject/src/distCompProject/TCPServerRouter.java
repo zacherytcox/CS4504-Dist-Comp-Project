@@ -17,8 +17,9 @@ import java.util.Arrays;
 import java.io.*;
 
 public class TCPServerRouter extends Thread {
+	private static int RTMax = 10000;
 	private int timeout = 0;
-    private Object [][] RoutingTable = new Object [10000][2]; // routing table
+    private Object [][] RoutingTable = new Object [RTMax][2]; // routing table
     private String name, ip;
     private int numSR, sockNum;
     public static File f;
@@ -34,22 +35,9 @@ public class TCPServerRouter extends Thread {
     }
 
     
-    //if ip already exists within table
-    private static int doesIpExist(Object [][] table, String ip){
-    	
-    	for(int i = 0; i<10; i++){
-    		if(table[i][0] == ip){
-    			return i;
-    		}
-    	}
-    	
-    	return -1;
-    	
-    }
-    
 
     private static int getNextNullArrayPostion(Object [][] table){
-    	for(int i = 0; i<10; i++){
+    	for(int i = 0; i<RTMax; i++){
     		if(table[i][0] == null){
     			return i;
     		}
@@ -63,27 +51,13 @@ public class TCPServerRouter extends Thread {
 
     	//adding server routers to table
     	for(int i=0;i<numSR;i++){
-//			System.out.println(this.name + " option: " +(40000 + (i+1)));
-//			System.out.println(name +  Arrays.deepToString(RoutingTable));
 			if (sockNum != (40000 + (i+1))){
 	    		RoutingTable[i][0] = ip;
 	    		RoutingTable[i][1] = 40000 + (i+1);
-	    		//System.out.println(name + " Added " + (40000 + (i+1)) + Arrays.deepToString(RoutingTable));
 			}
-			else{
-//				System.out.println(name + " nope");
-//				System.out.println(name +  Arrays.deepToString(RoutingTable));
-			}
-
     	}
     	
-//    	System.out.println(name + "");
-
-//    	System.out.println(name +  Arrays.deepToString(RoutingTable));
         Socket nodeSocket = null; // socket for the thread
-        
-        
-        
         int SockNum = sockNum; // port number
         Boolean Running = true;
         int ind; // indext in the routing table	
@@ -120,22 +94,16 @@ public class TCPServerRouter extends Thread {
             	//System.out.println(Arrays.deepToString(RoutingTable));
             	//get the next available position within table
                 ind = getNextNullArrayPostion(RoutingTable);
-                int ind2 = doesIpExist(RoutingTable, nodeSocket.getInetAddress().getHostAddress());
-                
+
                 if(ind == -1){
+                	System.out.println(name +  Arrays.deepToString(RoutingTable));
                 	System.err.println("Routing Table is full!");
                 	PrintWriter out;
                 	out = new PrintWriter(nodeSocket.getOutputStream(), true);
                 	out.println("Full.");
                 	break;
                 }
-                
-                //if the ip is already in the table, just send the same ip
-                if (ind2 != -1){
-                	ind = ind2;
-                }
 
-                
                 //creates a new thread
                 SThread t = new SThread(RoutingTable, nodeSocket, ind); // creates a thread with a random port
                 

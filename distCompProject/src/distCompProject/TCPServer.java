@@ -35,12 +35,12 @@ public class TCPServer extends Thread {
 			PrintWriter out = null; // for writing to ServerRouter
 			BufferedReader in = null; // for reading from ServerRouter
 			int mySockNum = mySock; // port number
-			int clientSockNum = mySockNum - 1000;
+			int clientSockNum = mySockNum - 10000;
 			int timeout = 60000;
 			
 			Random rand = new Random();
 			//pick random ServerRouter socket number
-			int srSockNum = 40000 + rand.nextInt(numSR)+1;
+			int srSockNum = 40000 + rand.nextInt(numSR) + 1;
 			
 			RunPhase2.addToLogFile(f, name + " Connecting to SR: " + srSockNum);
 	
@@ -49,12 +49,12 @@ public class TCPServer extends Thread {
 			// Tries to connect to the ServerRouter
 			try {
 				System.out.println("Connect to ServerRouter...");	
-				Socket = new Socket(ip, mySockNum);
+				Socket = new Socket(ip, srSockNum);
 				Socket.setSoTimeout(timeout);
 				out = new PrintWriter(Socket.getOutputStream(), true);
 				in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
 			} catch (UnknownHostException e) {
-				System.err.println("Server: Don't know about router: " + srSockNum);
+				System.err.println(name + " Don't know about router: SR-" + srSockNum);
 				return;
 				
 			} catch (IOException e) {
@@ -68,7 +68,7 @@ public class TCPServer extends Thread {
 			String fromClient = ""; // messages received from ServerRouter
 			
 			// Communication process (initial sends/receives)
-			out.println(ip);// initial send (IP of the destination Client)
+			out.println(clientSockNum);// initial send (IP of the destination Client)
 			
 			try{
 

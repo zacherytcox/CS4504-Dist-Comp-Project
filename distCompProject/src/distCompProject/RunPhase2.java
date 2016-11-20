@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
 
 import javax.swing.JTextField;
 
@@ -13,8 +14,8 @@ public class RunPhase2 {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int numSR = 3;
-		int numPairs = 2;
+		int numSR = 10;
+		int numPairs = 100;
 		String ip = "192.168.50.157";
 		String name;
 		File f = null;
@@ -39,12 +40,32 @@ public class RunPhase2 {
 			sr.start();
 		}
 		
+		//Wait for SR to launch and configure
+		try {
+			TimeUnit.SECONDS.sleep(10);
+			addToLogFile(f, "Waiting for SRs to launch..." );
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		//Start Servers
 		for (int i=0;i<numPairs;i++){
 			name = "S-" + ((i + 1) + 30000);
 			//String routerName, String address, String sock
 			TCPServer s = new TCPServer(name, ip, ((i + 1) + 30000) , numSR, f);
 			s.start();
+		}
+		
+		
+		//Wait for SR to launch and configure
+		try {
+			TimeUnit.SECONDS.sleep(10);
+			addToLogFile(f, "Waiting for Servers to launch..." );
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		
 		
