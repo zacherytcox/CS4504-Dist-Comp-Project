@@ -30,11 +30,7 @@ public class TCPServerRouter extends Thread {
     	
     	
     }
-	
-    //string socket num, string ip address
-    public static void main(String thisName, int numSR, int sockNum, String ip) throws IOException {
-    
-    }
+
     
     //if ip already exists within table
     private static int doesIpExist(Object [][] table, String ip){

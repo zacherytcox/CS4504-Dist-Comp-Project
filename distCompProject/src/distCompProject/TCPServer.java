@@ -10,7 +10,13 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 public class TCPServer {
-	TCPServer(String routerName, String address, String sock){
+	private String ip, sock;
+	
+	
+	TCPServer(String ipAddr, String socket){
+		
+		ip = ipAddr;
+		sock = socket;
 		
 	}
 	

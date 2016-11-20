@@ -7,7 +7,7 @@ public class RunPhase2 {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int numSR = 3000;
+		int numSR = 3;
 		int numPairs = 2;
 		String ip = "192.168.10.10";
 		String name;
