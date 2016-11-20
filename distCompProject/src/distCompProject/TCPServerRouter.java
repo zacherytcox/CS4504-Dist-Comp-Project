@@ -18,7 +18,7 @@ import java.io.*;
 
 public class TCPServerRouter extends Thread {
 	private int timeout = 0;
-    private Object [][] RoutingTable = new Object [100000][2]; // routing table
+    private Object [][] RoutingTable = new Object [10000][2]; // routing table
     private String name, ip;
     private int numSR, sockNum;
     
