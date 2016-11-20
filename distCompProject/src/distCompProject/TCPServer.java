@@ -11,12 +11,14 @@ import java.net.UnknownHostException;
 
 public class TCPServer {
 	private String ip, sock;
+	private int numSR;
 	
 	
-	TCPServer(String ipAddr, String socket){
+	TCPServer(String ipAddr, String socket, int numberOfSR){
 		
 		ip = ipAddr;
 		sock = socket;
+		numSR = numberOfSR;
 		
 	}
 	

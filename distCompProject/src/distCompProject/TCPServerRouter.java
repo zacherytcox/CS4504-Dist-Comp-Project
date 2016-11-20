@@ -21,12 +21,14 @@ public class TCPServerRouter extends Thread {
     private Object [][] RoutingTable = new Object [10000][2]; // routing table
     private String name, ip;
     private int numSR, sockNum;
+    public static File f;
     
-    TCPServerRouter (String thisName, int thisNumSR, int thisSockNum, String thisIp){
+    TCPServerRouter (String thisName, int thisNumSR, int thisSockNum, String thisIp, File file){
     	name = thisName;
     	numSR = thisNumSR;
     	sockNum = thisSockNum;
     	ip = thisIp;
+    	f = file;
     	
     	
     }
@@ -91,7 +93,8 @@ public class TCPServerRouter extends Thread {
         try {
             serverSocket = new ServerSocket(SockNum);
             serverSocket.setSoTimeout(timeout);
-            System.out.println(name + "is Listening on port: " + SockNum);
+            RunPhase2.addToLogFile(f, name + " is Listening on port: " + SockNum);
+            //System.out.println(name + "is Listening on port: " + SockNum);
         }
         catch (IOException e) {
             System.err.println("Could not listen on port: " + SockNum);
