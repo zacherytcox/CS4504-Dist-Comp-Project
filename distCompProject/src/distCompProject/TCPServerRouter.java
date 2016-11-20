@@ -18,7 +18,7 @@ import java.io.*;
 
 public class TCPServerRouter extends Thread {
 	private int timeout = 0;
-    private Object [][] RoutingTable = new Object [10][2]; // routing table
+    private Object [][] RoutingTable = new Object [100000][2]; // routing table
     private String name, ip;
     private int numSR, sockNum;
     
@@ -65,22 +65,23 @@ public class TCPServerRouter extends Thread {
 
     	//adding server routers to table
     	for(int i=0;i<numSR;i++){
-			System.out.println(this.name + " option: " +(40000 + (i+1)));
-			System.out.println(name +  Arrays.deepToString(RoutingTable));
+//			System.out.println(this.name + " option: " +(40000 + (i+1)));
+//			System.out.println(name +  Arrays.deepToString(RoutingTable));
 			if (sockNum != (40000 + (i+1))){
 	    		RoutingTable[i][0] = ip;
 	    		RoutingTable[i][1] = 40000 + (i+1);
-	    		System.out.println(name + " Added " + (40000 + (i+1)) + Arrays.deepToString(RoutingTable));
+	    		//System.out.println(name + " Added " + (40000 + (i+1)) + Arrays.deepToString(RoutingTable));
 			}
 			else{
-				System.out.println(name + " nope");
-				System.out.println(name +  Arrays.deepToString(RoutingTable));
+//				System.out.println(name + " nope");
+//				System.out.println(name +  Arrays.deepToString(RoutingTable));
 			}
 
     	}
     	
+//    	System.out.println(name + "");
 
-    	System.out.println(name +  Arrays.deepToString(RoutingTable));
+//    	System.out.println(name +  Arrays.deepToString(RoutingTable));
         Socket nodeSocket = null; // socket for the thread
         
         
@@ -94,7 +95,7 @@ public class TCPServerRouter extends Thread {
         try {
             serverSocket = new ServerSocket(SockNum);
             serverSocket.setSoTimeout(timeout);
-            System.out.println("ServerRouter is Listening on port: " + SockNum);
+            System.out.println(name + "is Listening on port: " + SockNum);
         }
         catch (IOException e) {
             System.err.println("Could not listen on port: " + SockNum);
