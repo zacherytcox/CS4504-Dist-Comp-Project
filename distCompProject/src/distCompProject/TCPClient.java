@@ -1,8 +1,10 @@
 package distCompProject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -12,9 +14,11 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Random;
 
-public class TCPClient {
+public class TCPClient extends Thread {
 	private String ip, name;
 	private int numSR, mySock;
 	public static File f = null;
@@ -62,6 +66,30 @@ public class TCPClient {
 				System.err.println("Client: Couldn't get I/O for the connection to: " + srSockNum);
 				return;
 			}
+			
+			
+			
+			//random string
+			char[] chars = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+			StringBuilder sb = new StringBuilder();
+			Random random = new Random();
+			for (int i = 0; i < (rand.nextInt(10000) + 1); i++) {
+			    char c = chars[random.nextInt(chars.length)];
+			    sb.append(c);
+			}
+			String output = sb.toString();
+			
+			
+			
+			Path tempFile = Files.createTempFile("TCPNode.", null);
+			BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile.toFile()));
+			bw.write(output);
+			bw.close();
+			System.out.println("Temp File Location: " + tempFile.toAbsolutePath());
+			
+			
+			
+			
 	
 			// read file
 			Reader reader = new FileReader(tempFile.toFile()); // create a file
@@ -98,7 +126,7 @@ public class TCPClient {
 			
 			System.out.println("ServerRouter: " + fromServer);
 			
-			out.println(serverSockNum); //// 7 IM 5
+			out.println(serverSockNum); 
 			
 			
 			try{
@@ -116,16 +144,19 @@ public class TCPClient {
 			}
 			
 
+			
 			//send to new node
 			//new sockets for server node
 			 try {
 				System.out.println("Connect to ServerRouter...");	
-				Socket = new Socket(address, SockNum);
+				Socket = new Socket(ip, serverSockNum);
 				Socket.setSoTimeout(timeout);
 				out = new PrintWriter(Socket.getOutputStream(), true);
 				in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
 			} catch (IOException e) {
-				System.err.println("Server: Couldn't get I/O for the connection to: " + routerName);
+				System.err.println("Client: Couldn't get I/O for the connection to: " + serverSockNum);
+				Socket.close();
+				fromFile.close();
 				return;
 			}
 
@@ -135,12 +166,13 @@ public class TCPClient {
 		
 			//if the file is not null
 			if (fromUser != null) {
-			//get the size of the file	
+				out.println(fromUser);
 				}
 
 			 
 			//this is the results
 			fromServer = in.readLine();
+			RunPhase2.addToLogFile(f, name + " Recieved: " + fromServer);
 			
 
 			// closing connections
@@ -154,6 +186,9 @@ public class TCPClient {
 		} catch(SocketException e){
 		System.out.println(e);
 			return;
+		}
+		catch(IOException e){
+			
 		}
 		
 	}

@@ -162,6 +162,7 @@ public class TCPServer extends Thread {
             	
     			// closing connections
     			System.out.println("Closing Sockets...");	
+    			out.println("Thread Bye.");
     			out.close();
     			in.close();
     			clientSocket.close();

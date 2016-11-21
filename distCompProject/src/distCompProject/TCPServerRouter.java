@@ -75,6 +75,13 @@ public class TCPServerRouter extends Thread {
             System.exit(1);
         }
 
+        try{
+			SRComThread	srct = new SRComThread(RoutingTable, name, sockNum, nodeSocket, ip, f );
+	        srct.run();
+        }catch(IOException e){
+        	
+        }
+        
         // Creating threads with accepted connections
         while (Running == true){
             try {
@@ -86,13 +93,7 @@ public class TCPServerRouter extends Thread {
                 	System.err.println("Socket Timeout! 60 Seconds!");
                 	return;
                 }
-            	
-            	
-            	//need to get socket and pass to "doesipexist"
-            	
-            	
-            	//System.out.println(Arrays.deepToString(RoutingTable));
-            	//get the next available position within table
+
                 ind = getNextNullArrayPostion(RoutingTable);
 
                 if(ind == -1){
@@ -105,7 +106,7 @@ public class TCPServerRouter extends Thread {
                 }
 
                 //creates a new thread
-                SThread t = new SThread(RoutingTable, nodeSocket, ind); // creates a thread with a random port
+                SThread t = new SThread(RoutingTable, nodeSocket, ind, numSR); // creates a thread with a random port
                 
                 //executes the run method within the SThread object
                 t.start(); // starts the thread

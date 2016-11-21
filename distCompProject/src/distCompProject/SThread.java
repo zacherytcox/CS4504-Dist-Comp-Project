@@ -17,15 +17,11 @@ public class SThread extends Thread {
 	private BufferedReader in; // reader (for reading from the machine connected to)
 	private String inputLine, outputLine, destination, destinationSock, addr; // communication strings
 	private Socket outSocket; // socket for communicating with a destination
-	private int ind; // indext in the routing table
+	private int ind, numSR; // indext in the routing table
 	private static int timeout = 60000;
-	private MulticastSocket multiSocket;
-	private String toAddress, fromAddress, packetString;
-	private String delims = "[ ]+";
-	private String [] packetParts;
 
 	// Constructor
-	SThread(Object [][] Table, Socket toClient, int index) throws IOException{
+	SThread(Object [][] Table, Socket toClient, int index, int numberSR) throws IOException{
 		
 		toClient.setSoTimeout(timeout);
         out = new PrintWriter(toClient.getOutputStream(), true);
@@ -35,6 +31,7 @@ public class SThread extends Thread {
         RTable[index][0] = addr; // IP addresses 
         RTable[index][1] = toClient; // sockets for communication
         ind = index;
+        numSR = numberSR;
         
 	}
 	
@@ -85,14 +82,16 @@ public class SThread extends Thread {
 				destinationSock = inputLine;
 	    		
 				// loops through the routing table to find the destination in the route table
-				for ( int i=0; i<10; i++){
+				for ( int i=0; i<RTable.length; i++){
 					if (destinationSock.equals((String) RTable[i][1])){
 						outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
-						System.out.println("Found destination: " + destination + "\n");
+						System.out.println("Found destination: " + destinationSock + "\n");
 						outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
+						outTo.println(destinationSock);
 						break;
 					}
-					/////SEND THE BROADCAST!!
+
+					
 				}
 
 				
@@ -104,16 +103,7 @@ public class SThread extends Thread {
 					removeTableEntry(RTable, addr, ind);
 					break;
 				}
-				
-				
-				outputLine = inputLine; // passes the input from the machine to the output string for the destination
-				
-				// if the socket is not null and actually has a port, it will send out the response from outputLine
-				if ( outSocket != null){				
-					outTo.println(outputLine); // writes to the destination
-					System.out.println("");
-				}	
-				break; //DONE WITH HANDLING THE PACKET
+
 				
 			}// end while	
 			

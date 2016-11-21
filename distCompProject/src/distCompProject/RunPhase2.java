@@ -14,8 +14,8 @@ public class RunPhase2 {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int numSR = 3000;
-		int numPairs = 1;
+		int numSR = 2;
+		int numPairs = 3;
 		String ip = "192.168.50.157";
 		String logFilePath = "C:\\Users\\Zach\\Desktop";
 		
@@ -72,13 +72,13 @@ public class RunPhase2 {
 		}
 		
 		
-//		//Start Clients
-//		for (int i=0;i<numPairs;i++){
-//			name = "C-" + ((i + 1) + 20000);
-//			//String routerName, String address, Path tempFile, String sock, String logPath
-//			TCPClient c = new TCPClient(name, numSR, ((i + 1) + 20000) , ip);
-//			c.start();
-//		}
+		//Start Clients
+		for (int i=0;i<numPairs;i++){
+			name = "C-" + ((i + 1) + 20000);
+			//String myName, String ipAddr, int socket, int numberOfSR, File file
+			TCPClient c = new TCPClient(name, ip, ((i + 1) + 20000), numSR, f);
+			c.start();
+		}
 		
 				
 		//removes log file. Ment for testing
