@@ -14,14 +14,17 @@ public class RunPhase2 {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int numSR = 10;
-		int numPairs = 100;
+		int numSR = 2;
+		int numPairs = 1;
 		String ip = "192.168.50.157";
+		String logFilePath = "C:\\Users\\Zach\\Desktop";
+		
+		
 		String name;
 		File f = null;
 		
 		try {
-			f = createLogFile("C:\\Users\\Zach\\Desktop");
+			f = createLogFile(logFilePath);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
