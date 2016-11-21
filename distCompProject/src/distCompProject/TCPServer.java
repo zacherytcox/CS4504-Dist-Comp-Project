@@ -5,17 +5,18 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.Random;
 
 public class TCPServer extends Thread {
 	private String ip, name;
 	private int numSR, mySock;
 	public static File f = null;
-	
 	
 	TCPServer(String myName, String ipAddr, int socket, int numberOfSR, File file){
 		
@@ -116,50 +117,63 @@ public class TCPServer extends Thread {
 			
 			out.println("ok");
 			
-			
-			
-			//change the ports to the client
-			
-			try{
-				// Communication while loop
-				while ((fromClient = in.readLine()) != null) {
-					System.out.println("Client said: " + fromClient);
-
-					
-					if (fromClient.toString().equals("Timeout.")){
-						out.println(fromServer);
-						System.err.println("Timeout! Resend!");
-						
-					}
-					
-					else{
-					
-						//operation, in this case turn to uppercase
-						fromServer = fromClient.toUpperCase(); // converting received message to upper case
-						
-						System.out.println("Server said: " + fromServer);
-						
-						out.println(fromServer); // sending the converted message back to the Client via ServerRouter
-						
-						//Space
-						System.out.println();
-					}	
-				}
-			} catch (SocketTimeoutException e){
-				System.err.println("Timeout, resend please...");
-				out.println("Timeout.");
-				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	
-			// closing connections
-			System.out.println("Closing Sockets...");	
-			out.close();
-			in.close();
 			Socket.close();
 			
+	        Socket clientSocket = null; // socket for the thread
+	        //Accepting connections
+	        ServerSocket serverSocket = null; // server socket for accepting connections
+	        try {
+	            serverSocket = new ServerSocket(mySockNum);
+	            serverSocket.setSoTimeout(timeout);
+	            RunPhase2.addToLogFile(f, name + " is Listening on port: " + mySockNum);
+	            //System.out.println(name + "is Listening on port: " + SockNum);
+	        }
+	        catch (IOException e) {
+	            System.err.println("Could not listen on port: " + mySockNum);
+	            System.exit(1);
+	        }
+			
+	        
+	        //Waiting on client to send request directly
+            try {
+            	//create a block for a request from a node
+            	try{
+            		clientSocket = serverSocket.accept(); 
+            	}
+                catch(SocketTimeoutException e){
+                	System.err.println("Socket Timeout! 60 Seconds!");
+                	return;
+                }
+ 
+            	clientSocket.setSoTimeout(timeout);
+                out = new PrintWriter(clientSocket.getOutputStream(), true);
+            	BufferedReader clientIn = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            	
+            	
+            	
+            	
+            	String firstPacketIn = clientIn.readLine();
+            	System.out.println("Client said: " + firstPacketIn);
+            	
+            	
+            	out.println(firstPacketIn.toUpperCase());
+
+            	
+            	
+    			// closing connections
+    			System.out.println("Closing Sockets...");	
+    			out.close();
+    			in.close();
+    			clientSocket.close();
+            	
+            	
+            }
+            catch (IOException e) {
+                System.err.println("Node failed to connect: " + e);
+                return;
+            }
+            
+            			
 		} catch(SocketException e){
 			System.out.println(e);
 			return;

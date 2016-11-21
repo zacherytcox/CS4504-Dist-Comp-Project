@@ -98,7 +98,7 @@ public class TCPClient {
 			
 			System.out.println("ServerRouter: " + fromServer);
 			
-			out.println("7 IM 5"); //// 7 IM 5
+			out.println(serverSockNum); //// 7 IM 5
 			
 			
 			try{

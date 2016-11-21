@@ -15,7 +15,7 @@ public class SThread extends Thread {
 	private Object [][] RTable; // routing table
 	private PrintWriter out, outTo; // writers (for writing back to the machine and to destination)
 	private BufferedReader in; // reader (for reading from the machine connected to)
-	private String inputLine, outputLine, destination, addr; // communication strings
+	private String inputLine, outputLine, destination, destinationSock, addr; // communication strings
 	private Socket outSocket; // socket for communicating with a destination
 	private int ind; // indext in the routing table
 	private static int timeout = 60000;
@@ -76,60 +76,17 @@ public class SThread extends Thread {
 			catch(InterruptedException ie){
 				System.out.println("Thread interrupted");
 			}
-			
+
 
 			
-			// waits 10 seconds to let the routing table fill with all machines' information
-			try{
-				Thread.currentThread().sleep(10000); 
-			}
-			catch(InterruptedException ie){
-				System.out.println("Thread interrupted");
-			}
-			
-			
-			
-			
-			// my client is trying to find a server...
-			try{
-				destination = in.readLine(); // initial read (the destination for writing)
-			}catch (SocketTimeoutException e) {
-				System.err.println(e);
-				out.println("Timeout.");				
-			}
-
-			
-			//Does this SR have the server?
-			
-			
-			//send to other server routers
-			
-			
-			//get response
-			
-			
-			out.println("response from server"); // confirmation of connection
-			
-		
-			
-
-			
-			
-			
-			
-
-            
 			// Communication loop	
 			while ((inputLine = in.readLine()) != null) {
 
-				packetParts = inputLine.split(delims);
-				
-				destination = packetParts[0];
-
+				destinationSock = inputLine;
 	    		
 				// loops through the routing table to find the destination in the route table
 				for ( int i=0; i<10; i++){
-					if (destination.equals((String) RTable[i][0])){
+					if (destinationSock.equals((String) RTable[i][1])){
 						outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
 						System.out.println("Found destination: " + destination + "\n");
 						outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
@@ -138,8 +95,6 @@ public class SThread extends Thread {
 					/////SEND THE BROADCAST!!
 				}
 
-				//Prints out Routing Table lookup time
-				//System.out.println(rtlt);
 				
 				System.out.println("Node " + addr + " said: " + inputLine + "\n");
 				

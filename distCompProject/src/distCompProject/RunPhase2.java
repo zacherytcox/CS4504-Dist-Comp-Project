@@ -14,7 +14,7 @@ public class RunPhase2 {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int numSR = 2;
+		int numSR = 3000;
 		int numPairs = 1;
 		String ip = "192.168.50.157";
 		String logFilePath = "C:\\Users\\Zach\\Desktop";
