@@ -1,6 +1,7 @@
 package distCompProject;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,10 +12,19 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Random;
 
 public class TCPClient {
+	private String ip, name;
+	private int numSR, mySock;
+	public static File f = null;
 	
-	TCPClient(){
+	TCPClient(String myName, String ipAddr, int socket, int numberOfSR, File file){
+		ip = ipAddr;
+		mySock = socket;
+		numSR = numberOfSR;
+		name = myName;
+		f = file;
 		
 	}
 	
@@ -27,21 +37,29 @@ public class TCPClient {
 			Socket Socket = null; // socket to connect with ServerRouter
 			PrintWriter out = null; // for writing to ServerRouter
 			BufferedReader in = null; // for reading form ServerRouter
-			InetAddress addr = InetAddress.getLocalHost();
-			String host = addr.getHostAddress(); // Client machine's IP
-			int SockNum = Integer.parseInt(sock); // port number 
+			int mySockNum = mySock; // port number
+			int serverSockNum = mySockNum + 10000;
+			int timeout = 60000;
+			
+			Random rand = new Random();
+			//pick random ServerRouter socket number
+			int srSockNum = 40000 + rand.nextInt(numSR) + 1;
+			
+			RunPhase2.addToLogFile(f, name + " Connecting to SR: " + srSockNum);
 	
+			
+			
 			// Tries to connect to the ServerRouter
 			try {
-				Socket = new Socket(routerName, SockNum); // opens port
+				Socket = new Socket(ip, srSockNum); // opens port
 				Socket.setSoTimeout(timeout);
 				out = new PrintWriter(Socket.getOutputStream(), true); // creates stream of data
 				in = new BufferedReader(new InputStreamReader(Socket.getInputStream())); 
 			} catch (UnknownHostException e) { // dont know the router
-				System.err.println("Client: Don't know about router: " + routerName);
+				System.err.println("Client: Don't know about router: " + srSockNum);
 				return;
 			} catch (IOException e) { // cant get data stream
-				System.err.println("Client: Couldn't get I/O for the connection to: " + routerName);
+				System.err.println("Client: Couldn't get I/O for the connection to: " + srSockNum);
 				return;
 			}
 	
@@ -58,7 +76,7 @@ public class TCPClient {
 	
 			// Communication process (initial sends/receives
 					
-			out.println(address);// initial send (IP of the destination Server)
+			out.println(serverSockNum);// initial send (IP of the destination Server)
 			
 			try{
 				fromServer = in.readLine();// initial receive from router (verification of connection)
