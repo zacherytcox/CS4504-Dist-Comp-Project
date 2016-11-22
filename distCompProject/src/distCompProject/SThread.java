@@ -85,7 +85,7 @@ public class SThread extends Thread {
 				// loops through the routing table to find the destination in the route table
 				System.out.println(Arrays.deepToString(RTable));
 				for ( int i=0; i<RTable.length; i++){
-					if (destinationSock.equals((String) RTable[i][1])){
+					if (destinationSock.equals(((Socket) RTable[i][1]).getPort())){
 						outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
 						System.out.println("Found destination: " + destinationSock + "\n");
 						outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer

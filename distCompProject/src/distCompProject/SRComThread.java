@@ -44,9 +44,8 @@ public class SRComThread extends Thread{
         	        	
             //Accepting connections
         	ServerSocket serverSocket = null; // server socket for accepting connections
-            serverSocket = null; // server socket for accepting connections
             try {
-                serverSocket = new ServerSocket(mySockNum);
+            	serverSocket = new ServerSocket(mySockNum);
                 serverSocket.setSoTimeout(timeout);
                 RunPhase2.addToLogFile(f, name + " is Listening for SRs on port: " + mySockNum);
                 //System.out.println(name + "is Listening on port: " + mySockNum);
@@ -55,12 +54,8 @@ public class SRComThread extends Thread{
                 System.err.println("Could not listen on port: " + mySockNum);
                 System.exit(1);
             }
-
-            socket = new Socket(ip, mySockNum); // opens port
-            socket.setSoTimeout(timeout);
             
-    		out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            Socket socket = null;
             
             
 	//SR connectivity
@@ -73,55 +68,60 @@ public class SRComThread extends Thread{
         		PrintWriter outOut = new PrintWriter(outSocket.getOutputStream(), true); // creates stream of data
         		BufferedReader outIn = new BufferedReader(new InputStreamReader(outSocket.getInputStream())); 
         		
-        		TimeUnit.SECONDS.sleep(5);
         		
         		outOut.println(name + " wants to know you!");
-        		System.out.println(name + " wants to know you!");
         		System.out.println(name + " contact " + outSocket);
         		
-        		System.out.println(name + " waiting for input on " + socket);
+        		
 				socket = serverSocket.accept();
+				System.out.println(name + " accepted input on " + socket);
+				
+				out = new PrintWriter(socket.getOutputStream(), true);
+	            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         		
         		String input = in.readLine();
-        		System.out.println(input);
+        		System.out.println(name + " got: " + input);
         		
         		int index = TCPServerRouter.getNextNullArrayPostion(RTable);
         		RTable[index][0] = ip; // IP addresses 
-        		RTable[index][1] = socket; // sockets for communication
-        		RunPhase2.addToLogFile(f, name + Arrays.deepToString(RTable));
+        		RTable[index][1] = outSocket; // sockets for communication
         		
         		nextSR = numSR + 50000;
         		
         		
         		outSocket = new Socket(ip, nextSR); // opens port
+        		outOut = new PrintWriter(outSocket.getOutputStream(), true); // creates stream of data
+        		outIn = new BufferedReader(new InputStreamReader(outSocket.getInputStream())); 
 				outOut.println(name + " wants to know you!");
-        		System.out.println(name + " wants to know you!");
+				System.out.println(name + " contact " + outSocket);
 				
 				
 				socket = serverSocket.accept();
+				System.out.println(name + " accepted input on " + socket);
+				
+				out = new PrintWriter(socket.getOutputStream(), true);
+	            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				
 				input = in.readLine();
-        		System.out.println(input);
+				System.out.println(name + " got: " + input);
         		
         		index = TCPServerRouter.getNextNullArrayPostion(RTable);
         		RTable[index][0] = ip; // IP addresses 
-        		RTable[index][1] = socket; // sockets for communication
-        		RunPhase2.addToLogFile(f, name + Arrays.deepToString(RTable));
+        		RTable[index][1] = outSocket; // sockets for communication
 				
         		
         	}
         	//if last SR
         	else if(mySockNum == numSR + 50000){
-        		System.out.println(name + " waiting for input on " + socket);
         		socket = serverSocket.accept();
+        		System.out.println(name + " accepted input on " + socket);
+        		
+        		out = new PrintWriter(socket.getOutputStream(), true);
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         		
         		String input = in.readLine();
-        		System.out.println(input);
-        		
-        		int index = TCPServerRouter.getNextNullArrayPostion(RTable);
-        		RTable[index][0] = ip; // IP addresses 
-        		RTable[index][1] = socket; // sockets for communication
-        		RunPhase2.addToLogFile(f, name + Arrays.deepToString(RTable));
-        		
+        		System.out.println(name + " got: " + input);
+        		        		
         		
         		int nextSR = 50001;
         		outSocket = new Socket(ip, nextSR);
@@ -129,42 +129,48 @@ public class SRComThread extends Thread{
         		BufferedReader outIn = new BufferedReader(new InputStreamReader(outSocket.getInputStream())); 
         		
         		outOut.println(name + " wants to know you!");
-        		System.out.println(name + " wants to know you!");
+        		System.out.println(name + " contact " + outSocket);
         		
-        		nextSR = numSR - 1;
+        		nextSR = mySockNum - 1;
 
 				socket = serverSocket.accept();
+				System.out.println(name + " accepted input on " + socket);
+				
+				out = new PrintWriter(socket.getOutputStream(), true);
+	            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				
 				input = in.readLine();
-        		System.out.println(input);
+				System.out.println(name + " got: " + input);
         		
-        		index = TCPServerRouter.getNextNullArrayPostion(RTable);
+				int index = TCPServerRouter.getNextNullArrayPostion(RTable);
         		RTable[index][0] = ip; // IP addresses 
-        		RTable[index][1] = socket; // sockets for communication
-        		RunPhase2.addToLogFile(f, name + Arrays.deepToString(RTable));
+        		RTable[index][1] = outSocket; // sockets for communication
 
         		
-        		outSocket = new Socket(ip, nextSR); // opens port
+        		outSocket = new Socket(ip, nextSR);
+        		outOut = new PrintWriter(outSocket.getOutputStream(), true); // creates stream of data
+        		outIn = new BufferedReader(new InputStreamReader(outSocket.getInputStream())); 
 				outOut.println(name + " wants to know you!");
-        		System.out.println(name + " wants to know you!");
+				System.out.println(name + " contact " + outSocket);
 				
-				
+        		index = TCPServerRouter.getNextNullArrayPostion(RTable);
+        		RTable[index][0] = ip; // IP addresses 
+        		RTable[index][1] = outSocket; // sockets for communication
 				
         		
         	}
         	//if other
         	else{
 
-        		System.out.println(name + " waiting for input on " + socket);
         		socket = serverSocket.accept();
-				
+        		System.out.println(name + " accepted input on " + socket);
+        		
+        		out = new PrintWriter(socket.getOutputStream(), true);
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        		
         		String input = in.readLine();
-        		System.out.println(input);
-        		
-        		int index = TCPServerRouter.getNextNullArrayPostion(RTable);
-        		RTable[index][0] = ip; // IP addresses 
-        		RTable[index][1] = socket; // sockets for communication
-        		RunPhase2.addToLogFile(f, name + Arrays.deepToString(RTable));
-        		
+        		System.out.println(name + " got: " + input);
+       		
         		
         		int nextSR = mySockNum + 1;
         		outSocket = new Socket(ip, nextSR);
@@ -172,25 +178,36 @@ public class SRComThread extends Thread{
         		BufferedReader outIn = new BufferedReader(new InputStreamReader(outSocket.getInputStream())); 
         		
         		outOut.println(name + " wants to know you!");
-        		System.out.println(name + " wants to know you!");
+        		System.out.println(name + " contact " + outSocket);
         		
-        		nextSR = numSR - 1;
+        		nextSR = 50001;
 
 				socket = serverSocket.accept();
+				System.out.println(name + " accepted input on " + socket);
+				
+				out = new PrintWriter(socket.getOutputStream(), true);
+	            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				
 				input = in.readLine();
-        		System.out.println(input);
+				System.out.println(name + " got: " + input);
+        		
+				int index = TCPServerRouter.getNextNullArrayPostion(RTable);
+        		RTable[index][0] = ip; // IP addresses 
+        		RTable[index][1] = outSocket; // sockets for communication
+
+        		
+        		outSocket = new Socket(ip, nextSR);
+        		outOut = new PrintWriter(outSocket.getOutputStream(), true); // creates stream of data
+        		outIn = new BufferedReader(new InputStreamReader(outSocket.getInputStream())); 
+				outOut.println(name + " wants to know you!");
+				System.out.println(name + " contact " + outSocket);
         		
         		index = TCPServerRouter.getNextNullArrayPostion(RTable);
         		RTable[index][0] = ip; // IP addresses 
-        		RTable[index][1] = socket; // sockets for communication
-
-        		
-        		outSocket = new Socket(ip, nextSR); // opens port
-				outOut.println(name + " wants to know you!");
-        		System.out.println(name + " wants to know you!");
+        		RTable[index][1] = outSocket; // sockets for communication
 				
-        		
         	}
+        	System.out.println(name + " Knows other SRs!");
         	RunPhase2.addToLogFile(f, name + " Knows other SRs!");
         	RunPhase2.addToLogFile(f, name + Arrays.deepToString(RTable));
 
@@ -243,10 +260,7 @@ public class SRComThread extends Thread{
         catch (IOException e) {
             System.err.println("Node failed to connect: " + e);
             return;
-        } catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        }
 		
 	}
 
