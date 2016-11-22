@@ -31,12 +31,9 @@ public class TCPServerRouter extends Thread {
     	ip = thisIp;
     	f = file;
     	
-    	
     }
 
-    
-
-    private static int getNextNullArrayPostion(Object [][] table){
+    public static int getNextNullArrayPostion(Object [][] table){
     	for(int i = 0; i<RTMax; i++){
     		if(table[i][0] == null){
     			return i;
@@ -47,7 +44,8 @@ public class TCPServerRouter extends Thread {
     }
     
     
-    public void run(){
+    @SuppressWarnings("resource")
+	public void run(){
 
     	
         Socket nodeSocket = null; // socket for the thread
@@ -61,133 +59,12 @@ public class TCPServerRouter extends Thread {
             serverSocket = new ServerSocket(SockNum);
             serverSocket.setSoTimeout(timeout);
             RunPhase2.addToLogFile(f, name + " is Listening on port: " + SockNum);
-            //System.out.println(name + "is Listening on port: " + SockNum);
+            System.out.println(name + " is Listening on port: " + SockNum);
             
             
-//            Thread srct = new SRComThread(RoutingTable, name, sockNum, ip, f );
-//   	        srct.start();  
-//            
-//            
-            //SR connectivity
-            
-            //if first SR
-        	if(sockNum == 50001){
-        		int nextSR = sockNum+1;
-        		
-				Socket thisSocket = new Socket(ip, nextSR); // opens port
-				thisSocket.setSoTimeout(timeout);
-				PrintWriter out = new PrintWriter(thisSocket.getOutputStream(), true);
-				out.println(name + " wants to know you!");
-				
-				serverSocket = new ServerSocket(SockNum);
-				nodeSocket = serverSocket.accept();
-				
-				BufferedReader in = new BufferedReader(new InputStreamReader(nodeSocket.getInputStream())); 
-        		String input = in.readLine();
-        		
-        		int index = getNextNullArrayPostion(RoutingTable);
-        		RoutingTable[index][0] = ip; // IP addresses 
-        		RoutingTable[index][1] = nodeSocket; // sockets for communication
-        		
-        		nextSR = numSR + 50000;
-        		
-        		thisSocket = new Socket(ip, nextSR); // opens port
-        		thisSocket.setSoTimeout(timeout);
-				out = new PrintWriter(thisSocket.getOutputStream(), true);
-				out.println(name + " wants to know you!");
-				
-				serverSocket = new ServerSocket(SockNum);
-				nodeSocket = serverSocket.accept();
-				
-				in = new BufferedReader(new InputStreamReader(nodeSocket.getInputStream())); 
-        		input = in.readLine();
-        		
-        		index = getNextNullArrayPostion(RoutingTable);
-        		RoutingTable[index][0] = ip; // IP addresses 
-        		RoutingTable[index][1] = nodeSocket; // sockets for communication
-				
-				
-        		
-        	}
-        	//if last SR
-        	else if(sockNum == numSR + 50000){
-        		
-        		serverSocket = new ServerSocket(SockNum);
-				nodeSocket = serverSocket.accept();
-				
-				BufferedReader in = new BufferedReader(new InputStreamReader(nodeSocket.getInputStream())); 
-        		String input = in.readLine();
-        		
-        		int index = getNextNullArrayPostion(RoutingTable);
-        		RoutingTable[index][0] = ip; // IP addresses 
-        		RoutingTable[index][1] = nodeSocket; // sockets for communication
-        		
-        		int nextSR = 50001;
-        		
-        		Socket thisSocket = new Socket(ip, nextSR); // opens port
-        		thisSocket.setSoTimeout(timeout);
-        		PrintWriter out = new PrintWriter(thisSocket.getOutputStream(), true);
-				out.println(name + " wants to know you!");
-				
-				
-				serverSocket = new ServerSocket(SockNum);
-				nodeSocket = serverSocket.accept();
-				
-				in = new BufferedReader(new InputStreamReader(nodeSocket.getInputStream())); 
-        		input = in.readLine();
-        		
-        		index = getNextNullArrayPostion(RoutingTable);
-        		RoutingTable[index][0] = ip; // IP addresses 
-        		RoutingTable[index][1] = nodeSocket; // sockets for communication
-        		
-        		nextSR = sockNum - 1 + 10000;
-        		
-        		thisSocket = new Socket(ip, nextSR); // opens port
-        		thisSocket.setSoTimeout(timeout);
-        		out = new PrintWriter(thisSocket.getOutputStream(), true);
-				out.println(name + " wants to know you!");
-        		
-        	}
-        	//if other
-        	else{
-        		serverSocket = new ServerSocket(SockNum);
-				nodeSocket = serverSocket.accept();
-				
-				BufferedReader in = new BufferedReader(new InputStreamReader(nodeSocket.getInputStream())); 
-        		String input = in.readLine();
-        		
-        		int index = getNextNullArrayPostion(RoutingTable);
-        		RoutingTable[index][0] = ip; // IP addresses 
-        		RoutingTable[index][1] = nodeSocket; // sockets for communication
-        		
-        		int nextSR = sockNum + 10001;
-        		
-        		Socket thisSocket = new Socket(ip, nextSR); // opens port
-        		thisSocket.setSoTimeout(timeout);
-        		PrintWriter out = new PrintWriter(thisSocket.getOutputStream(), true);
-				out.println(name + " wants to know you!");
-				
-				
-				serverSocket = new ServerSocket(SockNum);
-				nodeSocket = serverSocket.accept();
-				
-				in = new BufferedReader(new InputStreamReader(nodeSocket.getInputStream())); 
-        		input = in.readLine();
-        		
-        		index = getNextNullArrayPostion(RoutingTable);
-        		RoutingTable[index][0] = ip; // IP addresses 
-        		RoutingTable[index][1] = nodeSocket; // sockets for communication
-        		
-        		nextSR = sockNum - 1 + 10000;
-        		
-        		thisSocket = new Socket(ip, nextSR); // opens port
-        		thisSocket.setSoTimeout(timeout);
-        		out = new PrintWriter(thisSocket.getOutputStream(), true);
-				out.println(name + " wants to know you!");
-        		
-        	}
-        	
-        	serverSocket = new ServerSocket(SockNum);
+            Thread srct = new SRComThread(RoutingTable, name, sockNum, ip, numSR, f );
+   	        srct.start();  
+          
             
             
         }
@@ -214,8 +91,7 @@ public class TCPServerRouter extends Thread {
                 if(ind == -1){
                 	System.out.println(name +  Arrays.deepToString(RoutingTable));
                 	System.err.println("Routing Table is full!");
-                	PrintWriter out;
-                	out = new PrintWriter(nodeSocket.getOutputStream(), true);
+                	PrintWriter out = new PrintWriter(nodeSocket.getOutputStream(), true);
                 	out.println("Full.");
                 	break;
                 }

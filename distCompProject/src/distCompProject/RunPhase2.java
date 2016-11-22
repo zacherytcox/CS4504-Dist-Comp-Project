@@ -14,7 +14,7 @@ public class RunPhase2 {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		int numSR = 2;
+		int numSR = 3;
 		int numPairs = 3;
 		String ip = "192.168.50.157";
 		String logFilePath = "C:\\Users\\Zach\\Desktop";
@@ -46,7 +46,7 @@ public class RunPhase2 {
 		
 		//Wait for SR to launch and configure
 		try {
-			TimeUnit.SECONDS.sleep(10);
+			TimeUnit.SECONDS.sleep(100);
 			addToLogFile(f, "Waiting for SRs to launch..." );
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -65,7 +65,7 @@ public class RunPhase2 {
 		
 		//Wait for SR to launch and configure
 		try {
-			TimeUnit.SECONDS.sleep(10);
+			TimeUnit.SECONDS.sleep(100);
 			addToLogFile(f, "Waiting for Servers to launch..." );
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
