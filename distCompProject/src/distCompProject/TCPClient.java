@@ -55,7 +55,7 @@ public class TCPClient extends Thread {
 			
 			// Tries to connect to the ServerRouter
 			try {
-				Socket = new Socket(ip, srSockNum); // opens port
+				Socket = new Socket(ip, srSockNum,InetAddress.getByName(ip), mySockNum); // opens port
 				Socket.setSoTimeout(timeout);
 				out = new PrintWriter(Socket.getOutputStream(), true); // creates stream of data
 				in = new BufferedReader(new InputStreamReader(Socket.getInputStream())); 
@@ -104,7 +104,7 @@ public class TCPClient extends Thread {
 	
 			// Communication process (initial sends/receives
 					
-			out.println(serverSockNum);// initial send (IP of the destination Server)
+			out.println(mySockNum);// initial send (IP of the destination Server)
 			
 			try{
 				fromServer = in.readLine();// initial receive from router (verification of connection)
@@ -144,15 +144,40 @@ public class TCPClient extends Thread {
 			}
 			
 
+			RunPhase2.addToLogFile(f, name + " Ready to communicate with " + serverSockNum + " directly!");
+			
 			
 			//send to new node
 			//new sockets for server node
 			 try {
-				System.out.println("Connect to ServerRouter...");	
-				Socket = new Socket(ip, serverSockNum);
+				System.out.println("Connect to Server...");	
+				Socket = new Socket(ip, serverSockNum, InetAddress.getByName(ip), mySockNum);
 				Socket.setSoTimeout(timeout);
 				out = new PrintWriter(Socket.getOutputStream(), true);
 				in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
+						 
+				//reads data from temp file
+				fromUser = fromFile.readLine(); // reading strings from a file
+			
+				//if the file is not null
+				if (fromUser != null) {
+					out.println(fromUser);
+					}
+
+				 
+				//this is the results
+				fromServer = in.readLine();
+				RunPhase2.addToLogFile(f, name + " Recieved: " + fromServer);
+				
+
+				// closing connections
+				fromFile.close();
+				out.close();
+				in.close();
+				Socket.close();
+				return;
+		
+				
 			} catch (IOException e) {
 				System.err.println("Client: Couldn't get I/O for the connection to: " + serverSockNum);
 				Socket.close();
@@ -160,27 +185,7 @@ public class TCPClient extends Thread {
 				return;
 			}
 
-			 
-			//reads data from temp file
-			fromUser = fromFile.readLine(); // reading strings from a file
-		
-			//if the file is not null
-			if (fromUser != null) {
-				out.println(fromUser);
-				}
 
-			 
-			//this is the results
-			fromServer = in.readLine();
-			RunPhase2.addToLogFile(f, name + " Recieved: " + fromServer);
-			
-
-			// closing connections
-			fromFile.close();
-			out.close();
-			in.close();
-			Socket.close();
-			return;
 
 ////////////////////////////////////////////////////////////////
 		} catch(SocketException e){

@@ -16,13 +16,14 @@ public class SThread extends Thread {
 	private Object [][] RTable; // routing table
 	private PrintWriter out, outTo; // writers (for writing back to the machine and to destination)
 	private BufferedReader in; // reader (for reading from the machine connected to)
-	private String inputLine, outputLine, destination, destinationSock, addr; // communication strings
+	private String inputLine, outputLine, nodeSockNum, destinationSock, addr, name; // communication strings
 	private Socket outSocket; // socket for communicating with a destination
 	private int ind, numSR; // indext in the routing table
 	private static int timeout = 60000;
+	public File f;
 
 	// Constructor
-	SThread(Object [][] Table, Socket toClient, int index, int numberSR) throws IOException{
+	SThread(Object [][] Table, Socket toClient, int index, int numberSR, String thisName, File file) throws IOException{
 		
 		toClient.setSoTimeout(timeout);
         out = new PrintWriter(toClient.getOutputStream(), true);
@@ -31,8 +32,12 @@ public class SThread extends Thread {
         addr = toClient.getInetAddress().getHostAddress();
         RTable[index][0] = addr; // IP addresses 
         RTable[index][1] = toClient; // sockets for communication
+        RTable[index][2] = thisName;
         ind = index;
         numSR = numberSR;
+        name = thisName;
+        f = file;
+        
         
 	}
 	
@@ -57,13 +62,13 @@ public class SThread extends Thread {
 
 			// Initial sends/receives
 			try{
-				destination = in.readLine(); // initial read (the destination for writing)
+				nodeSockNum = in.readLine(); // initial read (the destination for writing)
 			}catch (SocketTimeoutException e) {
 				System.err.println(e);
 				out.println("Timeout.");
 				
 			}
-			System.out.println(addr + " Wants to forward to " + destination);
+			RunPhase2.addToLogFile(f, name + ": " + nodeSockNum + " Wants to forward to " + (Integer.parseInt(nodeSockNum) + 10000));
 			out.println("Connected to the router."); // confirmation of connection
 			
 		
@@ -80,32 +85,43 @@ public class SThread extends Thread {
 			// Communication loop	
 			while ((inputLine = in.readLine()) != null) {
 
-				destinationSock = inputLine;
+				destinationSock = inputLine;//other sock num
+				
+				//If "Thread Bye." gets sent, the thread will end
+				if (inputLine.toString().equals("Thread Bye.")){ // exit statement
+					System.out.println("Thread Terminated for: " + nodeSockNum + "\n");
+					removeTableEntry(RTable, addr, ind);
+					break;
+				}
+
+				
 	    		
 				// loops through the routing table to find the destination in the route table
 				System.out.println(Arrays.deepToString(RTable));
 				for ( int i=0; i<RTable.length; i++){
-					if (destinationSock.equals(((Socket) RTable[i][1]).getPort())){
-						outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
-						System.out.println("Found destination: " + destinationSock + "\n");
-						outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
-						outTo.println(destinationSock);
-						break;
+					if(RTable[i][0] != null){
+						Socket tmpSock = ((Socket)RTable[i][1]);
+						System.out.println(tmpSock.getPort() + " IS PORT");
+						int port = tmpSock.getPort();
+						if (Integer.parseInt(destinationSock) == port){
+							System.out.print(name + " found sock");
+							outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
+							System.out.println("Found destination: " + destinationSock + "\n");
+							outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
+							outTo.println(destinationSock);
+							break;
+						}
 					}
-
+					
+					RunPhase2.addToLogFile(f, nodeSockNum + " could not find " + destinationSock + "!");
+					//NEED TO CHECK OTHER SRs!
+					System.exit(1);
 					
 				}
 
 				
 				System.out.println("Node " + addr + " said: " + inputLine + "\n");
 				
-				//If "Thread Bye." gets sent, the thread will end
-				if (inputLine.toString().equals("Thread Bye.")){ // exit statement
-					System.out.println("Thread Terminated for: " + addr + "\n");
-					removeTableEntry(RTable, addr, ind);
-					break;
-				}
-
 				
 			}// end while	
 			

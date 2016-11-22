@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -50,7 +51,7 @@ public class TCPServer extends Thread {
 			// Tries to connect to the ServerRouter
 			try {
 				System.out.println("Connect to ServerRouter...");	
-				Socket = new Socket(ip, srSockNum);
+				Socket = new Socket(ip, srSockNum,InetAddress.getByName(ip), mySockNum);
 				Socket.setSoTimeout(timeout);
 				out = new PrintWriter(Socket.getOutputStream(), true);
 				in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
@@ -69,7 +70,7 @@ public class TCPServer extends Thread {
 			String fromClient = ""; // messages received from ServerRouter
 			
 			// Communication process (initial sends/receives)
-			out.println(clientSockNum);// initial send (IP of the destination Client)
+			out.println(mySockNum);// initial send (IP of the destination Client)
 			
 			try{
 
@@ -115,9 +116,14 @@ public class TCPServer extends Thread {
 			}
 			System.out.println("ServerRouter: " + fromClient);
 			
-			out.println("ok");
+			out.println(clientSockNum);
 			
 			Socket.close();
+			
+			
+
+			RunPhase2.addToLogFile(f, name + " Ready to communicate with " + clientSockNum + " directly!");
+			
 			
 	        Socket clientSocket = null; // socket for the thread
 	        //Accepting connections
@@ -125,7 +131,6 @@ public class TCPServer extends Thread {
 	        try {
 	            serverSocket = new ServerSocket(mySockNum);
 	            serverSocket.setSoTimeout(timeout);
-	            RunPhase2.addToLogFile(f, name + " is Listening on port: " + mySockNum);
 	            //System.out.println(name + "is Listening on port: " + SockNum);
 	        }
 	        catch (IOException e) {
