@@ -43,7 +43,7 @@ public class SRComThread extends Thread{
             try {
                 serverSocket = new ServerSocket(mySockNum);
                 serverSocket.setSoTimeout(timeout);
-                RunPhase2.addToLogFile(f, name + " is Listening on port: " + mySockNum);
+                RunPhase2.addToLogFile(f, name + " is Listening for SRs on port: " + mySockNum);
                 //System.out.println(name + "is Listening on port: " + SockNum);
             }
             catch (IOException e) {
@@ -70,6 +70,7 @@ public class SRComThread extends Thread{
 					Boolean found = false;
 					Socket tmpSock = null;
 					
+					System.out.println(name + " " + Arrays.deepToString(RTable));
 					for ( int i=0; i<RTable.length; i++){
 						if (destinationSock.equals((String) RTable[i][1])){
 							tmpSock = (Socket) RTable[i][1]; // gets the socket for communication from the table

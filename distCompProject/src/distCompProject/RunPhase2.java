@@ -30,6 +30,7 @@ public class RunPhase2 {
 			e.printStackTrace();
 		}
 		
+		addToLogFile(f, "\n###############################################################################################################################\n");
 		addToLogFile(f, "Number of Server Routers: " + numSR);
 		addToLogFile(f, "Number of Node Pairs: " + numPairs);
 		addToLogFile(f, "Ip address: " + ip );
