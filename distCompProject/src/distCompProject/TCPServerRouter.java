@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.io.*;
 
 public class TCPServerRouter extends Thread {
-	private static int RTMax = 10000;
+	private static int RTMax = 100;
 	private int timeout = 0;
     private Object [][] RoutingTable = new Object [RTMax][2]; // routing table
     private String name, ip;
@@ -69,18 +69,20 @@ public class TCPServerRouter extends Thread {
             serverSocket.setSoTimeout(timeout);
             RunPhase2.addToLogFile(f, name + " is Listening on port: " + SockNum);
             //System.out.println(name + "is Listening on port: " + SockNum);
+            
+            
+            Thread srct = new SRComThread(RoutingTable, name, sockNum, ip, f );
+   	        srct.start();  
+            
+            
         }
         catch (IOException e) {
             System.err.println("Could not listen on port: " + SockNum);
             System.exit(1);
         }
 
-        try{
-			SRComThread	srct = new SRComThread(RoutingTable, name, sockNum, nodeSocket, ip, f );
-	        srct.run();
-        }catch(IOException e){
-        	
-        }
+
+     
         
         // Creating threads with accepted connections
         while (Running == true){

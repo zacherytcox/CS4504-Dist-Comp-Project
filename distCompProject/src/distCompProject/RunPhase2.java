@@ -33,7 +33,7 @@ public class RunPhase2 {
 		addToLogFile(f, "Number of Server Routers: " + numSR);
 		addToLogFile(f, "Number of Node Pairs: " + numPairs);
 		addToLogFile(f, "Ip address: " + ip );
-		addToLogFile(f, "\n####################START PHASE 2 SIMULATION####################\n");
+		addToLogFile(f, "\n#################### START PHASE 2 SIMULATION ####################\n");
 		
 		
 		//Start SRs

@@ -20,17 +20,16 @@ public class SRComThread extends Thread{
 	private static int timeout = 60000;
 	public File f;
 	
-	SRComThread(Object [][] table, String myName, int thisSockNumber , Socket thisSocket, String myIp, File file) throws IOException{
+	SRComThread(Object [][] table, String myName, int thisSockNumber , String myIp, File file) throws IOException{
 
-        out = new PrintWriter(socket.getOutputStream(), true);
-        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+		
+		socket = null;
         RTable = table;
-        addr = socket.getInetAddress().getHostAddress();
         ip = myIp;
         mySockNum = thisSockNumber + 10000;
         name = myName;
         f = file;
-        socket = thisSocket;
+        
         
 		
 	}
@@ -60,6 +59,9 @@ public class SRComThread extends Thread{
             	System.err.println("Socket Timeout! 60 Seconds!");
             	return;
             }
+        	
+    		out = new PrintWriter(socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         	
         	
 			while ((destination = in.readLine()) != null) {

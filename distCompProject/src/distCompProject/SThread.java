@@ -8,6 +8,7 @@ package distCompProject;
 
 import java.io.*;
 import java.net.*;
+import java.util.Arrays;
 import java.lang.Exception;
 
 	
@@ -82,6 +83,7 @@ public class SThread extends Thread {
 				destinationSock = inputLine;
 	    		
 				// loops through the routing table to find the destination in the route table
+				System.out.println(Arrays.deepToString(RTable));
 				for ( int i=0; i<RTable.length; i++){
 					if (destinationSock.equals((String) RTable[i][1])){
 						outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
