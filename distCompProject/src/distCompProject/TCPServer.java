@@ -43,6 +43,7 @@ public class TCPServer extends Thread {
 			Random rand = new Random();
 			//pick random ServerRouter socket number
 			int srSockNum = 40000 + rand.nextInt(numSR) + 1;
+			//srSockNum = 40001;
 			
 			RunPhase2.addToLogFile(f, name + " Connecting to SR: " + srSockNum);
 	
@@ -118,6 +119,8 @@ public class TCPServer extends Thread {
 			
 			out.println(clientSockNum);
 			
+			out.println("Thread Bye.");
+			
 			Socket.close();
 			
 			
@@ -144,6 +147,7 @@ public class TCPServer extends Thread {
             	//create a block for a request from a node
             	try{
             		clientSocket = serverSocket.accept(); 
+            		RunPhase2.addToLogFile(f, name + " accepted connection from " + (mySockNum - 10000));
             	}
                 catch(SocketTimeoutException e){
                 	System.err.println("Socket Timeout! 60 Seconds!");

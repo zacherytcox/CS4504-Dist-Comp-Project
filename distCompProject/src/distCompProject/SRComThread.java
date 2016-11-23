@@ -36,6 +36,7 @@ public class SRComThread extends Thread{
 		
 	}
 	
+	@SuppressWarnings("resource")
 	public void run(){
 
         Boolean Running = true;
@@ -209,14 +210,17 @@ public class SRComThread extends Thread{
         	}
         	System.out.println(name + " Knows other SRs!");
         	RunPhase2.addToLogFile(f, name + " Knows other SRs!");
-        	RunPhase2.addToLogFile(f, name + Arrays.deepToString(RTable));
+        	//RunPhase2.addToLogFile(f, name + Arrays.deepToString(RTable));
 
 
 			while (Running == true) {
+				socket = null;
 				
 	        	//create a block for a request from a node
 	        	try{
 	        		socket = serverSocket.accept(); 
+	        		RunPhase2.addToLogFile(f, name + " new check request...");
+	        		
 	        	}
 	            catch(SocketTimeoutException e){
 	            	System.err.println("Socket Timeout! 60 Seconds!");
@@ -240,7 +244,7 @@ public class SRComThread extends Thread{
 					if(found){
 						
 						//tell the original that we found it
-						out.println("yes");
+						out.println("found");
 						
 						//send destination the packet
 						

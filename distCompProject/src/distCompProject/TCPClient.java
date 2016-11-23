@@ -33,6 +33,7 @@ public class TCPClient extends Thread {
 	}
 	
 	
+	@SuppressWarnings("resource")
 	public void run(){
 		
 		
@@ -48,6 +49,7 @@ public class TCPClient extends Thread {
 			Random rand = new Random();
 			//pick random ServerRouter socket number
 			int srSockNum = 40000 + rand.nextInt(numSR) + 1;
+			//srSockNum = 40001;
 			
 			RunPhase2.addToLogFile(f, name + " Connecting to SR: " + srSockNum);
 	
@@ -55,7 +57,7 @@ public class TCPClient extends Thread {
 			
 			// Tries to connect to the ServerRouter
 			try {
-				Socket = new Socket(ip, srSockNum,InetAddress.getByName(ip), mySockNum); // opens port
+				Socket = new Socket(ip, srSockNum, InetAddress.getByName(ip), mySockNum);
 				Socket.setSoTimeout(timeout);
 				out = new PrintWriter(Socket.getOutputStream(), true); // creates stream of data
 				in = new BufferedReader(new InputStreamReader(Socket.getInputStream())); 
@@ -133,6 +135,9 @@ public class TCPClient extends Thread {
 				fromServer = in.readLine();
 				System.out.println(fromServer + " from server, connected");
 				
+				//end thread
+				out.println("Thread Bye.");
+				
 			} catch(SocketTimeoutException e) {
 				System.err.println("Timeout!");
 				// closing connections
@@ -151,7 +156,7 @@ public class TCPClient extends Thread {
 			//new sockets for server node
 			 try {
 				System.out.println("Connect to Server...");	
-				Socket = new Socket(ip, serverSockNum, InetAddress.getByName(ip), mySockNum);
+				Socket = new Socket(ip, serverSockNum);
 				Socket.setSoTimeout(timeout);
 				out = new PrintWriter(Socket.getOutputStream(), true);
 				in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));

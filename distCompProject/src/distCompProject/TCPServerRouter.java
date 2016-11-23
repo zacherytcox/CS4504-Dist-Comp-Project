@@ -17,9 +17,9 @@ import java.util.Arrays;
 import java.io.*;
 
 public class TCPServerRouter extends Thread {
-	private static int RTMax = 100;
+	private static int RTMax = 10;
 	private int timeout = 0;
-    private Object [][] RoutingTable = new Object [RTMax][3]; // routing table
+    private Object [][] RoutingTable = new Object [RTMax][2]; // routing table
     private String name, ip;
     private int numSR, sockNum;
     public static File f;

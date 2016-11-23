@@ -15,8 +15,8 @@ import java.lang.Exception;
 public class SThread extends Thread {
 	private Object [][] RTable; // routing table
 	private PrintWriter out, outTo; // writers (for writing back to the machine and to destination)
-	private BufferedReader in; // reader (for reading from the machine connected to)
-	private String inputLine, outputLine, nodeSockNum, destinationSock, addr, name; // communication strings
+	private BufferedReader in, outIn; // reader (for reading from the machine connected to)
+	private String inputLine, outputLine, nodeSockNum, destinationSock, addr, name, tmp; // communication strings
 	private Socket outSocket; // socket for communicating with a destination
 	private int ind, numSR; // indext in the routing table
 	private static int timeout = 60000;
@@ -32,7 +32,6 @@ public class SThread extends Thread {
         addr = toClient.getInetAddress().getHostAddress();
         RTable[index][0] = addr; // IP addresses 
         RTable[index][1] = toClient; // sockets for communication
-        RTable[index][2] = thisName;
         ind = index;
         numSR = numberSR;
         name = thisName;
@@ -97,6 +96,8 @@ public class SThread extends Thread {
 				
 	    		
 				// loops through the routing table to find the destination in the route table
+				Boolean found = false;
+				
 				System.out.println(Arrays.deepToString(RTable));
 				for ( int i=0; i<RTable.length; i++){
 					if(RTable[i][0] != null){
@@ -104,7 +105,8 @@ public class SThread extends Thread {
 						System.out.println(tmpSock.getPort() + " IS PORT");
 						int port = tmpSock.getPort();
 						if (Integer.parseInt(destinationSock) == port){
-							System.out.print(name + " found sock");
+							found = true;
+							System.out.println(name + " found sock");
 							outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
 							System.out.println("Found destination: " + destinationSock + "\n");
 							outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
@@ -113,12 +115,49 @@ public class SThread extends Thread {
 						}
 					}
 					
-					RunPhase2.addToLogFile(f, nodeSockNum + " could not find " + destinationSock + "!");
+				}
+				
+				if (found == false){
+				
+					RunPhase2.addToLogFile(f, name + ": " + nodeSockNum + " could not find " + destinationSock + " locally!");
 					//NEED TO CHECK OTHER SRs!
+					
+					
+					for ( int i=0; i<RTable.length; i++){
+						System.out.println("here" + i);
+						if(RTable[i][0] != null){
+							Socket tmpSock = ((Socket)RTable[i][1]);
+							System.out.println(name + ": " + tmpSock.getPort() + " IS PORT");
+							int port = tmpSock.getPort();
+							if (port == 50001 || port == 50002 || port == 50003 ){
+								outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
+								System.out.println(outSocket);
+								outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
+								outIn = new BufferedReader(new InputStreamReader(outSocket.getInputStream()));
+								System.out.print("sent out: " + destinationSock);
+								outTo.println(destinationSock);
+								tmp = outIn.readLine();
+								
+								if (tmp == "found"){
+									found = true;
+									RunPhase2.addToLogFile(f, name + ": Found " + destinationSock + " at SR: " + port );
+									break;
+								}
+								
+								
+							}
+						}
+						
+					}
+					
+	
+					//System.exit(1);
+				}
+				if(found == false){
+					System.err.println("Cant find a node. Somethings off...");
 					System.exit(1);
 					
 				}
-
 				
 				System.out.println("Node " + addr + " said: " + inputLine + "\n");
 				
