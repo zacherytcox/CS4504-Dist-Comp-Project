@@ -166,6 +166,7 @@ public class TCPClient extends Thread {
 			
 				//if the file is not null
 				if (fromUser != null) {
+					RunPhase2.addToLogFile(f, name + ": sent " + fromUser);
 					out.println(fromUser);
 					}
 

@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.io.*;
 
 public class TCPServerRouter extends Thread {
-	private static int RTMax = 10;
+	private static int RTMax = 1000;
 	private int timeout = 0;
     private Object [][] RoutingTable = new Object [RTMax][2]; // routing table
     private String name, ip;
@@ -96,7 +96,7 @@ public class TCPServerRouter extends Thread {
                 }
 
                 //creates a new thread
-                SThread t = new SThread(RoutingTable, nodeSocket, ind, numSR, name, f); // creates a thread with a random port
+                SThread t = new SThread(RoutingTable, nodeSocket, ind, numSR, name, ip,  f); // creates a thread with a random port
                 
                 //executes the run method within the SThread object
                 t.start(); // starts the thread

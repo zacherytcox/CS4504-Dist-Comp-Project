@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -56,170 +57,25 @@ public class SRComThread extends Thread{
                 System.exit(1);
             }
             
-            Socket socket = null;
             
             
-	//SR connectivity
-            RunPhase2.addToLogFile(f, name + " Wanting to talk to other SRs!");
-            //if first SR
-        	if(mySockNum == 50001){
-        		
-        		int nextSR = mySockNum + 1;
-        		outSocket = new Socket(ip, nextSR);
-        		PrintWriter outOut = new PrintWriter(outSocket.getOutputStream(), true); // creates stream of data
-        		BufferedReader outIn = new BufferedReader(new InputStreamReader(outSocket.getInputStream())); 
-        		
-        		
-        		outOut.println(name + " wants to know you!");
-        		System.out.println(name + " contact " + outSocket);
-        		
-        		
-				socket = serverSocket.accept();
-				System.out.println(name + " accepted input on " + socket);
-				
-				out = new PrintWriter(socket.getOutputStream(), true);
-	            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        		
-        		String input = in.readLine();
-        		System.out.println(name + " got: " + input);
-        		
-        		int index = TCPServerRouter.getNextNullArrayPostion(RTable);
-        		RTable[index][0] = ip; // IP addresses 
-        		RTable[index][1] = outSocket; // sockets for communication
-        		
-        		nextSR = numSR + 50000;
-        		
-        		
-        		outSocket = new Socket(ip, nextSR); // opens port
-        		outOut = new PrintWriter(outSocket.getOutputStream(), true); // creates stream of data
-        		outIn = new BufferedReader(new InputStreamReader(outSocket.getInputStream())); 
-				outOut.println(name + " wants to know you!");
-				System.out.println(name + " contact " + outSocket);
-				
-				
-				socket = serverSocket.accept();
-				System.out.println(name + " accepted input on " + socket);
-				
-				out = new PrintWriter(socket.getOutputStream(), true);
-	            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				
-				input = in.readLine();
-				System.out.println(name + " got: " + input);
-        		
-        		index = TCPServerRouter.getNextNullArrayPostion(RTable);
-        		RTable[index][0] = ip; // IP addresses 
-        		RTable[index][1] = outSocket; // sockets for communication
-				
-        		
-        	}
-        	//if last SR
-        	else if(mySockNum == numSR + 50000){
-        		socket = serverSocket.accept();
-        		System.out.println(name + " accepted input on " + socket);
-        		
-        		out = new PrintWriter(socket.getOutputStream(), true);
-                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        		
-        		String input = in.readLine();
-        		System.out.println(name + " got: " + input);
-        		        		
-        		
-        		int nextSR = 50001;
-        		outSocket = new Socket(ip, nextSR);
-        		PrintWriter outOut = new PrintWriter(outSocket.getOutputStream(), true); // creates stream of data
-        		BufferedReader outIn = new BufferedReader(new InputStreamReader(outSocket.getInputStream())); 
-        		
-        		outOut.println(name + " wants to know you!");
-        		System.out.println(name + " contact " + outSocket);
-        		
-        		nextSR = mySockNum - 1;
-
-				socket = serverSocket.accept();
-				System.out.println(name + " accepted input on " + socket);
-				
-				out = new PrintWriter(socket.getOutputStream(), true);
-	            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				
-				input = in.readLine();
-				System.out.println(name + " got: " + input);
-        		
-				int index = TCPServerRouter.getNextNullArrayPostion(RTable);
-        		RTable[index][0] = ip; // IP addresses 
-        		RTable[index][1] = outSocket; // sockets for communication
-
-        		
-        		outSocket = new Socket(ip, nextSR);
-        		outOut = new PrintWriter(outSocket.getOutputStream(), true); // creates stream of data
-        		outIn = new BufferedReader(new InputStreamReader(outSocket.getInputStream())); 
-				outOut.println(name + " wants to know you!");
-				System.out.println(name + " contact " + outSocket);
-				
-        		index = TCPServerRouter.getNextNullArrayPostion(RTable);
-        		RTable[index][0] = ip; // IP addresses 
-        		RTable[index][1] = outSocket; // sockets for communication
-				
-        		
-        	}
-        	//if other
-        	else{
-
-        		socket = serverSocket.accept();
-        		System.out.println(name + " accepted input on " + socket);
-        		
-        		out = new PrintWriter(socket.getOutputStream(), true);
-                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        		
-        		String input = in.readLine();
-        		System.out.println(name + " got: " + input);
-       		
-        		
-        		int nextSR = mySockNum + 1;
-        		outSocket = new Socket(ip, nextSR);
-        		PrintWriter outOut = new PrintWriter(outSocket.getOutputStream(), true); // creates stream of data
-        		BufferedReader outIn = new BufferedReader(new InputStreamReader(outSocket.getInputStream())); 
-        		
-        		outOut.println(name + " wants to know you!");
-        		System.out.println(name + " contact " + outSocket);
-        		
-        		nextSR = 50001;
-
-				socket = serverSocket.accept();
-				System.out.println(name + " accepted input on " + socket);
-				
-				out = new PrintWriter(socket.getOutputStream(), true);
-	            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-				
-				input = in.readLine();
-				System.out.println(name + " got: " + input);
-        		
-				int index = TCPServerRouter.getNextNullArrayPostion(RTable);
-        		RTable[index][0] = ip; // IP addresses 
-        		RTable[index][1] = outSocket; // sockets for communication
-
-        		
-        		outSocket = new Socket(ip, nextSR);
-        		outOut = new PrintWriter(outSocket.getOutputStream(), true); // creates stream of data
-        		outIn = new BufferedReader(new InputStreamReader(outSocket.getInputStream())); 
-				outOut.println(name + " wants to know you!");
-				System.out.println(name + " contact " + outSocket);
-        		
-        		index = TCPServerRouter.getNextNullArrayPostion(RTable);
-        		RTable[index][0] = ip; // IP addresses 
-        		RTable[index][1] = outSocket; // sockets for communication
-				
-        	}
-        	System.out.println(name + " Knows other SRs!");
-        	RunPhase2.addToLogFile(f, name + " Knows other SRs!");
+            
+	
         	//RunPhase2.addToLogFile(f, name + Arrays.deepToString(RTable));
 
 
 			while (Running == true) {
-				socket = null;
 				
 	        	//create a block for a request from a node
 	        	try{
+	        		Socket socket = null;
+	        		
 	        		socket = serverSocket.accept(); 
-	        		RunPhase2.addToLogFile(f, name + " new check request...");
+	        		
+	        		
+					out = new PrintWriter(socket.getOutputStream(), true);
+		            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+	        		
 	        		
 	        	}
 	            catch(SocketTimeoutException e){
@@ -234,14 +90,27 @@ public class SRComThread extends Thread{
 					
 					System.out.println(name + " " + Arrays.deepToString(RTable));
 					for ( int i=0; i<RTable.length; i++){
-						if (destinationSock.equals((String) RTable[i][1])){
-							tmpSock = (Socket) RTable[i][1]; // gets the socket for communication from the table
-							found = true;
-							break;
+						if(RTable[i][0] != null ){
+							tmpSock = (Socket) RTable[i][1];
+							int tmpPort = tmpSock.getPort();
+							int tmp2Port = Integer.parseInt(destination);
+							System.out.println(tmpPort + " and " + destination);
+							if (tmpPort == tmp2Port){
+								System.out.println("match!!");
+								tmpSock = (Socket) RTable[i][1]; // gets the socket for communication from the table
+								
+								PrintWriter tmpOut = new PrintWriter(tmpSock.getOutputStream(), true);
+					            BufferedReader tmpIn = new BufferedReader(new InputStreamReader(tmpSock.getInputStream()));
+					            
+					            tmpOut.println(destination);
+								
+								found = true;
+								break;
+							}
 						}
 					}
 					
-					if(found){
+					if(found == true){
 						
 						//tell the original that we found it
 						out.println("found");

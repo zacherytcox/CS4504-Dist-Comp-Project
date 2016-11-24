@@ -18,8 +18,8 @@ public class RunPhase2 {
 		int numSR = 3;
 		
 		
-		int numPairs = 1;
-		String ip = "192.168.50.157";
+		int numPairs = 100;
+		String ip = "192.168.1.84";
 		String logFilePath = "C:\\Users\\Zach\\Desktop";
 		
 		

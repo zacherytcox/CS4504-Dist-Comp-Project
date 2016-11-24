@@ -137,6 +137,7 @@ public class TCPServer extends Thread {
 	            //System.out.println(name + "is Listening on port: " + SockNum);
 	        }
 	        catch (IOException e) {
+	        	RunPhase2.addToLogFile(f, name + ": Could not listen for direct communication to client...");
 	            System.err.println("Could not listen on port: " + mySockNum);
 	            System.exit(1);
 	        }
@@ -179,6 +180,7 @@ public class TCPServer extends Thread {
             	
             }
             catch (IOException e) {
+            	RunPhase2.addToLogFile(f, name + ": Server main functionaltiy with client failed with IOException...");
                 System.err.println("Node failed to connect: " + e);
                 return;
             }

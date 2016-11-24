@@ -16,20 +16,22 @@ public class SThread extends Thread {
 	private Object [][] RTable; // routing table
 	private PrintWriter out, outTo; // writers (for writing back to the machine and to destination)
 	private BufferedReader in, outIn; // reader (for reading from the machine connected to)
-	private String inputLine, outputLine, nodeSockNum, destinationSock, addr, name, tmp; // communication strings
+	private String inputLine, outputLine, nodeSockNum, destinationSock, addr, name, tmp, ip; // communication strings
 	private Socket outSocket; // socket for communicating with a destination
-	private int ind, numSR; // indext in the routing table
+	private int ind, numSR, port; // indext in the routing table
 	private static int timeout = 60000;
 	public File f;
 
 	// Constructor
-	SThread(Object [][] Table, Socket toClient, int index, int numberSR, String thisName, File file) throws IOException{
+	SThread(Object [][] Table, Socket toClient, int index, int numberSR, String thisName, String thisIp, File file) throws IOException{
 		
 		toClient.setSoTimeout(timeout);
         out = new PrintWriter(toClient.getOutputStream(), true);
         in = new BufferedReader(new InputStreamReader(toClient.getInputStream()));
         RTable = Table;
         addr = toClient.getInetAddress().getHostAddress();
+        port =toClient.getLocalPort();
+        ip = thisIp;
         RTable[index][0] = addr; // IP addresses 
         RTable[index][1] = toClient; // sockets for communication
         ind = index;
@@ -59,11 +61,13 @@ public class SThread extends Thread {
 		try{
 			
 
+			System.out.println(port);
 			// Initial sends/receives
 			try{
 				nodeSockNum = in.readLine(); // initial read (the destination for writing)
 			}catch (SocketTimeoutException e) {
 				System.err.println(e);
+				RunPhase2.addToLogFile(f, name + ": initial Socket read failed...");
 				out.println("Timeout.");
 				
 			}
@@ -76,6 +80,7 @@ public class SThread extends Thread {
 				Thread.currentThread().sleep(10000); 
 			}
 			catch(InterruptedException ie){
+				RunPhase2.addToLogFile(f, name + ": Could not put thread to sleep...");
 				System.out.println("Thread interrupted");
 			}
 
@@ -122,38 +127,36 @@ public class SThread extends Thread {
 					RunPhase2.addToLogFile(f, name + ": " + nodeSockNum + " could not find " + destinationSock + " locally!");
 					//NEED TO CHECK OTHER SRs!
 					
-					
-					for ( int i=0; i<RTable.length; i++){
-						System.out.println("here" + i);
-						if(RTable[i][0] != null){
-							Socket tmpSock = ((Socket)RTable[i][1]);
-							System.out.println(name + ": " + tmpSock.getPort() + " IS PORT");
-							int port = tmpSock.getPort();
-							if (port == 50001 || port == 50002 || port == 50003 ){
-								outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
-								System.out.println(outSocket);
-								outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
-								outIn = new BufferedReader(new InputStreamReader(outSocket.getInputStream()));
-								System.out.print("sent out: " + destinationSock);
-								outTo.println(destinationSock);
-								tmp = outIn.readLine();
-								
-								if (tmp == "found"){
-									found = true;
-									RunPhase2.addToLogFile(f, name + ": Found " + destinationSock + " at SR: " + port );
-									break;
-								}
-								
-								
-							}
+
+					for (int i = 1;i<=numSR;i++){
+						int tmp = i + 40000;
+						if(tmp != port){
+							int nextSR = (tmp + 10000);
+			        		outSocket = new Socket(ip, nextSR);
+			        		PrintWriter outOut = new PrintWriter(outSocket.getOutputStream(), true); // creates stream of data
+			        		BufferedReader outIn = new BufferedReader(new InputStreamReader(outSocket.getInputStream())); 
+			        		
+			        		
+			        		outOut.println(destinationSock);
+			        		System.out.println(name + " contact " + outSocket);
+			        		
+			        		String response = outIn.readLine();
+			        		System.out.println(response);
+			        		if(response.equals("found")){
+			        			found = true;
+			        			RunPhase2.addToLogFile(f, name + ": " + outSocket + " found " + destinationSock + "!");
+			        			break;
+			        			
+			        		}
 						}
-						
 					}
-					
+	
 	
 					//System.exit(1);
 				}
 				if(found == false){
+					RunPhase2.addToLogFile(f, name + ": Did not find destination on any of the SRs...");
+					RunPhase2.addToLogFile(f, name + ": details: " + destinationSock);
 					System.err.println("Cant find a node. Somethings off...");
 					System.exit(1);
 					
@@ -166,6 +169,7 @@ public class SThread extends Thread {
 			
 		}// end try
 		catch (IOException e) {
+			RunPhase2.addToLogFile(f, name + ": While loop failed with IOExeception on SThread...: " + outSocket + e);
 			System.err.println("Could not listen to socket.");
 			return;
         } catch (Exception e) {
