@@ -51,7 +51,7 @@ public class TCPServerRouter extends Thread {
         Socket nodeSocket = null; // socket for the thread
         int SockNum = sockNum; // port number
         Boolean Running = true;
-        int ind; // indext in the routing table	
+        int ind = 0; // indext in the routing table	
 
         //Accepting connections
         ServerSocket serverSocket = null; // server socket for accepting connections
@@ -85,15 +85,17 @@ public class TCPServerRouter extends Thread {
                 	return;
                 }
 
-                ind = getNextNullArrayPostion(RoutingTable);
+            	  
+            	
+//                ind = getNextNullArrayPostion(RoutingTable);
 
-                if(ind == -1){
-                	System.out.println(name +  Arrays.deepToString(RoutingTable));
-                	System.err.println("Routing Table is full!");
-                	PrintWriter out = new PrintWriter(nodeSocket.getOutputStream(), true);
-                	out.println("Full.");
-                	break;
-                }
+//                if(ind == -1){
+//                	System.out.println(name +  Arrays.deepToString(RoutingTable));
+//                	System.err.println("Routing Table is full!");
+//                	PrintWriter out = new PrintWriter(nodeSocket.getOutputStream(), true);
+//                	out.println("Full.");
+//                	break;
+//                }
 
                 //creates a new thread
                 SThread t = new SThread(RoutingTable, nodeSocket, ind, numSR, name, ip,  f); // creates a thread with a random port
@@ -101,6 +103,7 @@ public class TCPServerRouter extends Thread {
                 //executes the run method within the SThread object
                 t.start(); // starts the thread
                 
+                ind++;
                 //data + space
                 System.out.println("ServerRouter connected with Node: " + nodeSocket.getInetAddress().getHostAddress());
                 System.out.println();

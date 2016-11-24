@@ -31,7 +31,7 @@ public class RunPhase2 {
 		int numSR = 3;
 		
 		
-		int numPairs = 100;
+		int numPairs = 1000;
 		String ip = "192.168.50.157";
 		
 
@@ -162,10 +162,6 @@ public class RunPhase2 {
 		
 		return s;
 	}
-	
-	
-	
-	
 	
 	
 	

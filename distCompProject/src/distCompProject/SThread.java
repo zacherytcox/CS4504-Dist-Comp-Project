@@ -18,9 +18,10 @@ public class SThread extends Thread {
 	private BufferedReader in, outIn; // reader (for reading from the machine connected to)
 	private String inputLine, outputLine, nodeSockNum, destinationSock, addr, name, tmp, ip, response; // communication strings
 	private Socket outSocket; // socket for communicating with a destination
-	private int ind, numSR, port; // indext in the routing table
+	private int ind, numSR; // indext in the routing table
+	private  int port;
 	private static int timeout = 60000;
-	public File f;
+	public  File f;
 
 	// Constructor
 	SThread(Object [][] Table, Socket toClient, int index, int numberSR, String thisName, String thisIp, File file) throws IOException{
@@ -40,27 +41,31 @@ public class SThread extends Thread {
         f = file;
         
         
+        int tmp = toClient.getPort();
+        
 	}
 	
-    private static void removeTableEntry(Object [][] table, String ip, int ind){    	
-    	
-    	// loops through the routing table to find the route saved and delete it
-		for ( int i=0; i<10; i++){
-			if (ip.equals((String) table[i][0])){
-				table[i][0] = null;
-				table[i][1] = null;
-				System.out.println("Removed " + ip + " from Routing Table...\n");
-			}
-		}
-    	   	
-    }
+//    private static void removeTableEntry(Object [][] table, String ip, int ind, File f, String port){    	
+//    	
+//    	// loops through the routing table to find the route saved and delete it
+//		for ( int i=0; i<10; i++){
+//			if (ip.equals((String) table[i][0])){
+//				table[i][0] = null;
+//				table[i][1] = null;
+//				RunPhase2.addToLogFile(f, "REMOVED " + port + " from Routing Table...\n" );
+//				System.out.println("Removed " + ip + " from Routing Table...\n");
+//			}
+//		}
+//    	   	
+//    }
 	
 	// Run method (will run for each machine that connects to the ServerRouter)
 	@SuppressWarnings("static-access")
 	public void run(){
 		try{
 			
-
+			RunPhase2.addToLogFile(f, "ADDED: " + name + ": Port " + tmp + " to routing table");
+			
 			//System.out.println(port);
 			// Initial sends/receives
 			try{
@@ -94,7 +99,7 @@ public class SThread extends Thread {
 				//If "Thread Bye." gets sent, the thread will end
 				if (inputLine.toString().equals("Thread Bye.")){ // exit statement
 					System.out.println("Thread Terminated for: " + nodeSockNum + "\n");
-					removeTableEntry(RTable, addr, ind);
+					//removeTableEntry(RTable, addr, ind, f, tmp);
 					break;
 				}
 
@@ -131,6 +136,7 @@ public class SThread extends Thread {
 					for (int i = 1;i<=numSR;i++){
 						int tmp = i + 40000;
 						if(tmp != port){
+							RunPhase2.addToLogFile(f, "CHECK: " + name + ": Searching for: " + destinationSock + " at SR: " + tmp );
 							int nextSR = (tmp + 10000);
 			        		outSocket = new Socket(ip, nextSR);
 			        		PrintWriter outOut = new PrintWriter(outSocket.getOutputStream(), true); // creates stream of data
@@ -141,6 +147,7 @@ public class SThread extends Thread {
 			        		//System.out.println(name + " contact " + outSocket);
 			        		
 			        		response = outIn.readLine();
+			        		RunPhase2.addToLogFile(f, "RESPONSE: " + name + ": Looking for " + destinationSock + " at SR: " + tmp + " and sent back: " + response );
 			        		//System.out.println(response);
 			        		if(response.equals("found")){
 			        			found = true;
@@ -156,7 +163,7 @@ public class SThread extends Thread {
 				}
 				if(found == false){
 					RunPhase2.addToLogFile(RunPhase2.t, name + " Cant find destination: " + destinationSock);
-					//RunPhase2.addToLogFile(f, "ERROR! " + name + ": Did not find destination on any of the SRs... Detalis: " + destinationSock + response);
+					RunPhase2.addToLogFile(f, "ERROR! " + name + ": Did not find destination on any of the SRs... " + destinationSock + response);
 					System.err.println("Cant find a node. Somethings off...");
 					//System.exit(1);
 					
@@ -169,8 +176,8 @@ public class SThread extends Thread {
 			
 		}// end try
 		catch (IOException e) {
-			RunPhase2.addToLogFile(f, name + ": While loop failed with IOExeception on SThread...: " + outSocket + e);
-			System.err.println("Could not listen to socket.");
+			RunPhase2.addToLogFile(f, name + ": While loop failed with IOExeception on SThread...: " + tmp + " and " + outSocket + e);
+			System.err.println("Could not listen to socket. " + tmp);
 			return;
         } catch (Exception e) {
 			// TODO Auto-generated catch block
