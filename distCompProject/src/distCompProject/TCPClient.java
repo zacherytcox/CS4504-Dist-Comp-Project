@@ -166,14 +166,14 @@ public class TCPClient extends Thread {
 			
 				//if the file is not null
 				if (fromUser != null) {
-					RunPhase2.addToLogFile(f, name + ": sent " + fromUser);
+					RunPhase2.addToLogFile(RunPhase2.s, name + " Sent: " + fromUser);
 					out.println(fromUser);
 					}
 
 				 
 				//this is the results
 				fromServer = in.readLine();
-				RunPhase2.addToLogFile(f, name + " Recieved: " + fromServer);
+				RunPhase2.addToLogFile(RunPhase2.s, name + " Recieved: " + fromServer);
 				
 
 				// closing connections

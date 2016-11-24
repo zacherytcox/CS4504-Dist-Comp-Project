@@ -5,12 +5,21 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.concurrent.TimeUnit;
 
-import javax.swing.JTextField;
 
 public class RunPhase2 {
+	
+	//DO NOT CHANGE
+	public static String folder = "\\TCPPhase2Testing";
+	
+	public static String logFilePath = "C:\\Users\\Zach\\Desktop" + folder;
+	
+	public static File s = null;
+	
+	
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -18,10 +27,10 @@ public class RunPhase2 {
 		int numSR = 3;
 		
 		
-		int numPairs = 3;
-		String ip = "192.168.1.84";
-		String logFilePath = "C:\\Users\\Zach\\Desktop";
+		int numPairs = 100;
+		String ip = "192.168.50.157";
 		
+
 		
 		String name;
 		File f = null;
@@ -32,6 +41,18 @@ public class RunPhase2 {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		
+		
+		try {
+			s = createStringFile(logFilePath);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
 		
 		addToLogFile(f, "\n###############################################################################################################################\n");
 		addToLogFile(f, "Number of Server Routers: " + numSR);
@@ -49,8 +70,9 @@ public class RunPhase2 {
 		
 		//Wait for SR to launch and configure
 		try {
-			TimeUnit.SECONDS.sleep(3);
 			addToLogFile(f, "Waiting for SRs to launch..." );
+			TimeUnit.SECONDS.sleep(5);
+			
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -68,8 +90,9 @@ public class RunPhase2 {
 		
 		//Wait for SR to launch and configure
 		try {
-			TimeUnit.SECONDS.sleep(3);
 			addToLogFile(f, "Waiting for Servers to launch..." );
+			TimeUnit.SECONDS.sleep(20);
+			
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -98,6 +121,11 @@ public class RunPhase2 {
 	//This method creates a temp file containing the string inserted in the GUI
 	public static File createLogFile(String path) throws IOException{
 		
+	    File directory = new File(String.valueOf(path));
+	    if (! directory.exists()){
+	        directory.mkdir();
+	    }
+		
 		File f = new File(path + File.separator + "TCPLog.txt");
 				
 		try {
@@ -106,9 +134,35 @@ public class RunPhase2 {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		
 		return f;
 	}
+	
+
+	
+	//This method creates a temp file containing the string inserted in the GUI
+	public static File createStringFile(String path) throws IOException{
+		
+		File s = new File(path + File.separator + "TCPStrings.txt");
+		
+		try {
+			s.createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
+		
+		return s;
+	}
+	
+	
+	
+	
+	
+	
 	
 	public static void addToLogFile(File f, String content){
 		

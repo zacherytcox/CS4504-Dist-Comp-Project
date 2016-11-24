@@ -61,7 +61,7 @@ public class SThread extends Thread {
 		try{
 			
 
-			System.out.println(port);
+			//System.out.println(port);
 			// Initial sends/receives
 			try{
 				nodeSockNum = in.readLine(); // initial read (the destination for writing)
@@ -103,17 +103,17 @@ public class SThread extends Thread {
 				// loops through the routing table to find the destination in the route table
 				Boolean found = false;
 				
-				System.out.println(Arrays.deepToString(RTable));
+				//System.out.println(Arrays.deepToString(RTable));
 				for ( int i=0; i<RTable.length; i++){
 					if(RTable[i][0] != null){
 						Socket tmpSock = ((Socket)RTable[i][1]);
-						System.out.println(tmpSock.getPort() + " IS PORT");
+						//System.out.println(tmpSock.getPort() + " IS PORT");
 						int port = tmpSock.getPort();
 						if (Integer.parseInt(destinationSock) == port){
 							found = true;
-							System.out.println(name + " found sock");
+							//System.out.println(name + " found sock");
 							outSocket = (Socket) RTable[i][1]; // gets the socket for communication from the table
-							System.out.println("Found destination: " + destinationSock + "\n");
+							//System.out.println("Found destination: " + destinationSock + "\n");
 							outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
 							outTo.println(destinationSock);
 							break;
@@ -138,10 +138,10 @@ public class SThread extends Thread {
 			        		
 			        		
 			        		outOut.println(destinationSock);
-			        		System.out.println(name + " contact " + outSocket);
+			        		//System.out.println(name + " contact " + outSocket);
 			        		
 			        		response = outIn.readLine();
-			        		System.out.println(response);
+			        		//System.out.println(response);
 			        		if(response.equals("found")){
 			        			found = true;
 			        			RunPhase2.addToLogFile(f, name + ": " + outSocket + " found " + destinationSock + "!");
@@ -157,7 +157,7 @@ public class SThread extends Thread {
 				if(found == false){
 					RunPhase2.addToLogFile(f, "ERROR! " + name + ": Did not find destination on any of the SRs... Detalis: " + destinationSock + response);
 					System.err.println("Cant find a node. Somethings off...");
-					System.exit(1);
+					//System.exit(1);
 					
 				}
 				

@@ -88,15 +88,15 @@ public class SRComThread extends Thread{
 					Boolean found = false;
 					Socket tmpSock = null;
 					
-					System.out.println(name + " " + Arrays.deepToString(RTable));
+					//System.out.println(name + " " + Arrays.deepToString(RTable));
 					for ( int i=0; i<RTable.length; i++){
 						if(RTable[i][0] != null ){
 							tmpSock = (Socket) RTable[i][1];
 							int tmpPort = tmpSock.getPort();
 							int tmp2Port = Integer.parseInt(destination);
-							System.out.println(tmpPort + " and " + destination);
+							//System.out.println(tmpPort + " and " + destination);
 							if (tmpPort == tmp2Port){
-								System.out.println("match!!");
+								//System.out.println("match!!");
 								tmpSock = (Socket) RTable[i][1]; // gets the socket for communication from the table
 								
 								PrintWriter tmpOut = new PrintWriter(tmpSock.getOutputStream(), true);
@@ -118,7 +118,7 @@ public class SRComThread extends Thread{
 						//send destination the packet
 						
 						outSocket = tmpSock; // gets the socket for communication from the table
-						System.out.println("Found destination: " + destinationSock + "\n");
+						//System.out.println("Found destination: " + destinationSock + "\n");
 						outTo = new PrintWriter(outSocket.getOutputStream(), true); // assigns a writer
 						outTo.println(destinationSock);
 					} else{
