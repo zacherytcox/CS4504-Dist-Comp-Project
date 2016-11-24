@@ -155,7 +155,8 @@ public class SThread extends Thread {
 					//System.exit(1);
 				}
 				if(found == false){
-					RunPhase2.addToLogFile(f, "ERROR! " + name + ": Did not find destination on any of the SRs... Detalis: " + destinationSock + response);
+					RunPhase2.addToLogFile(RunPhase2.t, name + " Cant find destination: " + destinationSock);
+					//RunPhase2.addToLogFile(f, "ERROR! " + name + ": Did not find destination on any of the SRs... Detalis: " + destinationSock + response);
 					System.err.println("Cant find a node. Somethings off...");
 					//System.exit(1);
 					

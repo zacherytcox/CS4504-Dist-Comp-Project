@@ -17,7 +17,11 @@ public class RunPhase2 {
 	
 	public static String logFilePath = "C:\\Users\\Zach\\Desktop" + folder;
 	
+	//string file
 	public static File s = null;
+	
+	//timeout file
+	public static File t = null;
 	
 	
 
@@ -37,22 +41,14 @@ public class RunPhase2 {
 		
 		try {
 			f = createLogFile(logFilePath);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		
-		
-		try {
 			s = createStringFile(logFilePath);
+			t = createTimeoutFile(logFilePath);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-		
-		
+
 		
 		addToLogFile(f, "\n###############################################################################################################################\n");
 		addToLogFile(f, "Number of Server Routers: " + numSR);
@@ -106,16 +102,8 @@ public class RunPhase2 {
 			TCPClient c = new TCPClient(name, ip, ((i + 1) + 20000), numSR, f);
 			c.start();
 		}
-		
-				
-		//removes log file. Ment for testing
-		//f.delete();
-
-		
 
 	}
-	
-	
 	
 	
 	//This method creates a temp file containing the string inserted in the GUI
@@ -145,6 +133,23 @@ public class RunPhase2 {
 	public static File createStringFile(String path) throws IOException{
 		
 		File s = new File(path + File.separator + "TCPStrings.txt");
+		
+		try {
+			s.createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
+		
+		return s;
+	}
+	
+	//This method creates a temp file containing the string inserted in the GUI
+	public static File createTimeoutFile(String path) throws IOException{
+		
+		File s = new File(path + File.separator + "TCPTimeouts.txt");
 		
 		try {
 			s.createNewFile();
