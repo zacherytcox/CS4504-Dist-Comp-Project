@@ -16,7 +16,7 @@ public class SThread extends Thread {
 	private Object [][] RTable; // routing table
 	private PrintWriter out, outTo; // writers (for writing back to the machine and to destination)
 	private BufferedReader in, outIn; // reader (for reading from the machine connected to)
-	private String inputLine, outputLine, nodeSockNum, destinationSock, addr, name, tmp, ip; // communication strings
+	private String inputLine, outputLine, nodeSockNum, destinationSock, addr, name, tmp, ip, response; // communication strings
 	private Socket outSocket; // socket for communicating with a destination
 	private int ind, numSR, port; // indext in the routing table
 	private static int timeout = 60000;
@@ -140,7 +140,7 @@ public class SThread extends Thread {
 			        		outOut.println(destinationSock);
 			        		System.out.println(name + " contact " + outSocket);
 			        		
-			        		String response = outIn.readLine();
+			        		response = outIn.readLine();
 			        		System.out.println(response);
 			        		if(response.equals("found")){
 			        			found = true;
@@ -155,8 +155,7 @@ public class SThread extends Thread {
 					//System.exit(1);
 				}
 				if(found == false){
-					RunPhase2.addToLogFile(f, name + ": Did not find destination on any of the SRs...");
-					RunPhase2.addToLogFile(f, name + ": details: " + destinationSock);
+					RunPhase2.addToLogFile(f, "ERROR! " + name + ": Did not find destination on any of the SRs... Detalis: " + destinationSock + response);
 					System.err.println("Cant find a node. Somethings off...");
 					System.exit(1);
 					

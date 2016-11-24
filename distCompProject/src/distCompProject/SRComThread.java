@@ -123,7 +123,8 @@ public class SRComThread extends Thread{
 						outTo.println(destinationSock);
 					} else{
 						
-						out.println("no");
+						//out.println("no");
+						out.println(Arrays.deepToString(RTable));
 					}
 			
 
