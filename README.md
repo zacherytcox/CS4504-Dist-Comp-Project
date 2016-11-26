@@ -9,6 +9,7 @@ This code is a hand in for CS4504 Distributed Computing at Kennesaw State Univer
 * Modify the ip address to the host machine's ip
 * Modify the logFilePath for the location to create the TCPPhase2Testing folder
 * Can change number of pairs if desired
+* Run from `RunPhase2.java`
 
 ## Contributing
 1. Fork it!
