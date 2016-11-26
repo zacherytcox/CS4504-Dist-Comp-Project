@@ -20,6 +20,7 @@ This code is a hand in for CS4504 Distributed Computing at Kennesaw State Univer
 ## History
 * Phase1
 * Phase2
+
 ## Credits
 * Zachery Cox (git:zacherytcox)
 * Andrew Marks (git:amarks15)
