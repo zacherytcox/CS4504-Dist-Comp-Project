@@ -1,5 +1,10 @@
 package distCompProject;
 
+//Author: Zachery Cox
+//Date: 11/25/16
+
+
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -44,18 +49,21 @@ public class TCPClient extends Thread {
 			BufferedReader in = null; // for reading form ServerRouter
 			int mySockNum = mySock; // port number
 			int serverSockNum = mySockNum + 10000;
-			int timeout = 60000;
+			int timeout = 120000;
 			
 			Random rand = new Random();
 			//pick random ServerRouter socket number
 			int srSockNum = 40000 + rand.nextInt(numSR) + 1;
 			//srSockNum = 40001;
 			
+			long t0, t1, t;
+			
 			RunPhase2.addToLogFile(f, name + " Connecting to SR: " + srSockNum);
 	
 			
 			
 			// Tries to connect to the ServerRouter
+			//Handshake with SR
 			try {
 				Socket = new Socket(ip, srSockNum, InetAddress.getByName(ip), mySockNum);
 				Socket.setSoTimeout(timeout);
@@ -68,7 +76,6 @@ public class TCPClient extends Thread {
 				System.err.println("Client: Couldn't get I/O for the connection to: " + srSockNum);
 				return;
 			}
-			
 			
 			
 			//random string
@@ -84,6 +91,9 @@ public class TCPClient extends Thread {
 			
 			
 			Path tempFile = Files.createTempFile("TCPNode.", null);
+			tempFile.toFile().deleteOnExit();
+			
+			
 			BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile.toFile()));
 			bw.write(output);
 			bw.close();
@@ -91,9 +101,7 @@ public class TCPClient extends Thread {
 			
 			
 			
-			
-	
-			// read file
+			// read file containing random string
 			Reader reader = new FileReader(tempFile.toFile()); // create a file
 			System.out.println("Reading File...");												
 																	
@@ -105,7 +113,7 @@ public class TCPClient extends Thread {
 
 	
 			// Communication process (initial sends/receives
-					
+			// HandShake with Server Router
 			out.println(mySockNum);// initial send (IP of the destination Server)
 			
 			try{
@@ -128,9 +136,12 @@ public class TCPClient extends Thread {
 			
 			System.out.println("ServerRouter: " + fromServer);
 			
+			
+			t0 = System.currentTimeMillis();
+			
+			//Handshake to server via server routers
 			out.println(serverSockNum); 
-			
-			
+
 			try{
 				fromServer = in.readLine();
 				System.out.println(fromServer + " from server, connected");
@@ -152,8 +163,7 @@ public class TCPClient extends Thread {
 			RunPhase2.addToLogFile(f, name + " Ready to communicate with " + serverSockNum + " directly!");
 			
 			
-			//send to new node
-			//new sockets for server node
+			//Connect directly to Server
 			 try {
 				System.out.println("Connect to Server...");	
 				Socket = new Socket(ip, serverSockNum);
@@ -164,6 +174,7 @@ public class TCPClient extends Thread {
 				//reads data from temp file
 				fromUser = fromFile.readLine(); // reading strings from a file
 			
+				
 				//if the file is not null
 				if (fromUser != null) {
 					RunPhase2.addToLogFile(RunPhase2.s, name + " Sent: " + fromUser);
@@ -174,6 +185,14 @@ public class TCPClient extends Thread {
 				//this is the results
 				fromServer = in.readLine();
 				RunPhase2.addToLogFile(RunPhase2.s, name + " Recieved: " + fromServer);
+				t1 = System.currentTimeMillis();
+				
+				
+				t = t1 - t0;
+				int tmpp = ((int)t)/1000;
+				
+				
+				RunPhase2.addToPerformanceFile(RunPhase2.p, name, fromUser, fromUser.getBytes().length, tmpp);
 				
 
 				// closing connections

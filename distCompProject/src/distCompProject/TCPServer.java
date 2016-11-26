@@ -1,5 +1,10 @@
 package distCompProject;
 
+//Author: Zachery Cox
+//Date: 11/25/16
+
+
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +16,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 import java.util.Random;
 
 public class TCPServer extends Thread {
@@ -38,7 +42,7 @@ public class TCPServer extends Thread {
 			BufferedReader in = null; // for reading from ServerRouter
 			int mySockNum = mySock; // port number
 			int clientSockNum = mySockNum - 10000;
-			int timeout = 60000;
+			int timeout = 120000;
 			
 			Random rand = new Random();
 			//pick random ServerRouter socket number
@@ -71,6 +75,7 @@ public class TCPServer extends Thread {
 			String fromClient = ""; // messages received from ServerRouter
 			
 			// Communication process (initial sends/receives)
+			//Handshake with Server router
 			out.println(mySockNum);// initial send (IP of the destination Client)
 			
 			try{
@@ -98,8 +103,10 @@ public class TCPServer extends Thread {
 			System.out.println("ServerRouter: " + fromClient);
 	
 
+			
+			
+			//Waiting for client to request a direct connect
 			try{
-
 				fromClient = in.readLine();// waiting on client to handshake
 
 			}catch(SocketTimeoutException e){

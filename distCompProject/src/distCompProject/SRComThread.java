@@ -1,43 +1,44 @@
 package distCompProject;
 
+//Author: Zachery Cox
+//Date: 11/25/16
+
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
-import java.util.concurrent.TimeUnit;
+
+
+
 
 public class SRComThread extends Thread{
 	private Object [][] RTable; // routing table
 	private PrintWriter out, outTo; // writers (for writing back to the machine and to destination)
 	private BufferedReader in; // reader (for reading from the machine connected to)
-	private String inputLine, outputLine, destination, destinationSock, addr, ip, name; // communication strings
-	private int mySockNum, numSR; // indext in the routing table
-	private Socket socket, outSocket;
-	private static int timeout = 60000;
+	private String  destination, destinationSock, name; // communication strings
+	private int mySockNum; // indext in the routing table
+	private Socket outSocket;
+	private static int timeout = 120000;
 	public File f;
 	
 	SRComThread(Object [][] table, String myName, int thisSockNumber , String myIp, int SRs, File file) throws IOException{
 
 		
-		socket = null;
         RTable = table;
-        ip = myIp;
         mySockNum = thisSockNumber + 10000;
         name = myName;
         f = file;
-        numSR = SRs;
         
         
 		
 	}
 	
-	@SuppressWarnings("resource")
 	public void run(){
 
         Boolean Running = true;
@@ -63,10 +64,10 @@ public class SRComThread extends Thread{
 	
         	//RunPhase2.addToLogFile(f, name + Arrays.deepToString(RTable));
 
-
+            //while block waiting for other SR to request a RT Check
 			while (Running == true) {
 				
-	        	//create a block for a request from a node
+	        	
 	        	try{
 	        		Socket socket = null;
 	        		
@@ -100,7 +101,6 @@ public class SRComThread extends Thread{
 								tmpSock = (Socket) RTable[i][1]; // gets the socket for communication from the table
 								
 								PrintWriter tmpOut = new PrintWriter(tmpSock.getOutputStream(), true);
-					            BufferedReader tmpIn = new BufferedReader(new InputStreamReader(tmpSock.getInputStream()));
 					            
 					            tmpOut.println(destination);
 								

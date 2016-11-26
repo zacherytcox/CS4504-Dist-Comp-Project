@@ -1,26 +1,23 @@
 package distCompProject;
 
 //Author: Zachery Cox
-//Date: 10/11/16
-
-//This code is ran within TCPServerRouter.java
+//Date: 11/25/16
 
 
 import java.io.*;
 import java.net.*;
-import java.util.Arrays;
 import java.lang.Exception;
 
 	
 public class SThread extends Thread {
 	private Object [][] RTable; // routing table
 	private PrintWriter out, outTo; // writers (for writing back to the machine and to destination)
-	private BufferedReader in, outIn; // reader (for reading from the machine connected to)
-	private String inputLine, outputLine, nodeSockNum, destinationSock, addr, name, tmp, ip, response; // communication strings
+	private BufferedReader in; // reader (for reading from the machine connected to)
+	private String inputLine, nodeSockNum, destinationSock, addr, name, tmp, ip, response; // communication strings
 	private Socket outSocket; // socket for communicating with a destination
-	private int ind, numSR; // indext in the routing table
-	private  int port;
-	private static int timeout = 60000;
+	private int numSR; // indext in the routing table
+	private  int port, port2;
+	private static int timeout = 120000;
 	public  File f;
 
 	// Constructor
@@ -32,39 +29,32 @@ public class SThread extends Thread {
         RTable = Table;
         addr = toClient.getInetAddress().getHostAddress();
         port =toClient.getLocalPort();
+        port2 = toClient.getPort();
+        
         ip = thisIp;
         RTable[index][0] = addr; // IP addresses 
         RTable[index][1] = toClient; // sockets for communication
-        ind = index;
         numSR = numberSR;
         name = thisName;
         f = file;
         
         
-        int tmp = toClient.getPort();
+        
+        
+        
         
 	}
 	
-//    private static void removeTableEntry(Object [][] table, String ip, int ind, File f, String port){    	
-//    	
-//    	// loops through the routing table to find the route saved and delete it
-//		for ( int i=0; i<10; i++){
-//			if (ip.equals((String) table[i][0])){
-//				table[i][0] = null;
-//				table[i][1] = null;
-//				RunPhase2.addToLogFile(f, "REMOVED " + port + " from Routing Table...\n" );
-//				System.out.println("Removed " + ip + " from Routing Table...\n");
-//			}
-//		}
-//    	   	
-//    }
+
 	
 	// Run method (will run for each machine that connects to the ServerRouter)
 	@SuppressWarnings("static-access")
 	public void run(){
+		long t0, t1, t;
+		
 		try{
 			
-			RunPhase2.addToLogFile(f, "ADDED: " + name + ": Port " + tmp + " to routing table");
+			RunPhase2.addToLogFile(f, "ADDED: " + name + ": Port " + port2 + " to routing table");
 			
 			//System.out.println(port);
 			// Initial sends/receives
@@ -82,7 +72,7 @@ public class SThread extends Thread {
 		
 			// waits 10 seconds to let the routing table fill with all machines' information
 			try{
-				Thread.currentThread().sleep(10000); 
+				Thread.currentThread().sleep(15000); 
 			}
 			catch(InterruptedException ie){
 				RunPhase2.addToLogFile(f, name + ": Could not put thread to sleep...");
@@ -109,6 +99,7 @@ public class SThread extends Thread {
 				Boolean found = false;
 				
 				//System.out.println(Arrays.deepToString(RTable));
+				t0 = System.currentTimeMillis();
 				for ( int i=0; i<RTable.length; i++){
 					if(RTable[i][0] != null){
 						Socket tmpSock = ((Socket)RTable[i][1]);
@@ -126,6 +117,7 @@ public class SThread extends Thread {
 					}
 					
 				}
+				t1 = System.currentTimeMillis();
 				
 				if (found == false){
 				
@@ -158,8 +150,14 @@ public class SThread extends Thread {
 						}
 					}
 	
-	
+					t1 = System.currentTimeMillis();
 					//System.exit(1);
+					
+					t = t1 - t0;
+					int tmpp = ((int)t)/1000;
+					
+					
+					RunPhase2.addToSRPerformanceFile(RunPhase2.sr, name, RTable.length,  tmpp);
 				}
 				if(found == false){
 					RunPhase2.addToLogFile(RunPhase2.t, name + " Cant find destination: " + destinationSock);

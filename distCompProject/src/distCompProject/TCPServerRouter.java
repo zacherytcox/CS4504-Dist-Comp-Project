@@ -1,23 +1,14 @@
 package distCompProject;
 
 //Author: Zachery Cox
-//Date: 10/11/16
-
-/*//////////////////////////////// INSTRUCTIONS ////////////////////////////////////////
-NOTE:
-Server Node MUST connect to server router first. Error otherwise.
-Just run script to allow this node to be ran as a server router.
-It will operate on port 5555.
-No GUI, since user interaction will be minimal
-//////////////////////////////////////////////////////////////////////////////////*/
+//Date: 11/25/16
 
 
 import java.net.*;
-import java.util.Arrays;
 import java.io.*;
 
 public class TCPServerRouter extends Thread {
-	private static int RTMax = 1000;
+	private static int RTMax = 2000;
 	private int timeout = 0;
     private Object [][] RoutingTable = new Object [RTMax][2]; // routing table
     private String name, ip;
@@ -33,19 +24,8 @@ public class TCPServerRouter extends Thread {
     	
     }
 
-    public static int getNextNullArrayPostion(Object [][] table){
-    	for(int i = 0; i<RTMax; i++){
-    		if(table[i][0] == null){
-    			return i;
-    		}
-    	}
-    	    	
-    	return -1;
-    }
-    
-    
-    @SuppressWarnings("resource")
-	public void run(){
+
+    public void run(){
 
     	
         Socket nodeSocket = null; // socket for the thread
@@ -63,8 +43,6 @@ public class TCPServerRouter extends Thread {
             
             Thread srct = new SRComThread(RoutingTable, name, sockNum, ip, numSR, f );
    	        srct.start();  
-          
-            
             
         }
         catch (IOException e) {
@@ -85,17 +63,6 @@ public class TCPServerRouter extends Thread {
                 	return;
                 }
 
-            	  
-            	
-//                ind = getNextNullArrayPostion(RoutingTable);
-
-//                if(ind == -1){
-//                	System.out.println(name +  Arrays.deepToString(RoutingTable));
-//                	System.err.println("Routing Table is full!");
-//                	PrintWriter out = new PrintWriter(nodeSocket.getOutputStream(), true);
-//                	out.println("Full.");
-//                	break;
-//                }
 
                 //creates a new thread
                 SThread t = new SThread(RoutingTable, nodeSocket, ind, numSR, name, ip,  f); // creates a thread with a random port
@@ -105,7 +72,7 @@ public class TCPServerRouter extends Thread {
                 
                 ind++;
                 //data + space
-                System.out.println("ServerRouter connected with Node: " + nodeSocket.getInetAddress().getHostAddress());
+                System.out.println("ServerRouter connected with Node: " + nodeSocket.getPort());
                 System.out.println();
                 System.out.println();
             }
